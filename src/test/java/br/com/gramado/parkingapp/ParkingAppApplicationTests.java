@@ -1,10 +1,10 @@
-package br.com.gramadoparking.gramadoparkingapp;
+package br.com.gramado.parkingapp;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class GramadoparkingAppApplicationTests {
+class ParkingAppApplicationTests {
 
 	@Test
 	void contextLoads() {
