@@ -54,15 +54,15 @@ public class PersonController {
 
     @Operation(summary = "Atualizar pessoa")
     @PutMapping
-    public ResponseEntity<PersonDto> update(@Valid @RequestBody PersonDto personDto) throws NotFoundException {
+    public ResponseEntity<PersonDto> update(@Valid @RequestBody PersonDto personDto) throws NotFoundException, ValidationsException {
         PersonDto person = updateCommand.execute(personDto);
 
         return ResponseEntity.ok(person);
     }
 
     @Operation(summary = "Recuperar pessoa por identificador")
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<PersonDto> findById(@Parameter(example = "000.005.269-58") @PathVariable String identifier) throws NotFoundException {
-        return ResponseEntity.ok(findPersonById.execute(identifier));
+    @GetMapping(value = "/find")
+    public ResponseEntity<PersonDto> findById(@Parameter(example = "000.005.269-58") @RequestParam String document) throws NotFoundException {
+        return ResponseEntity.ok(findPersonById.execute(document));
     }
 }

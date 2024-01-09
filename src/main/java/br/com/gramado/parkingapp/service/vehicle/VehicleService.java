@@ -34,12 +34,17 @@ class VehicleService implements VehicleServiceInterface {
 
     @Override
     public Vehicle insert(Vehicle vehicle) {
-        Optional<Person> optional = personService.findById(vehicle.getPerson().getId());
+        Optional<Person> optional = personService.findByDocument(vehicle.getPerson().getDocument());
+
+        Person person;
 
         if (optional.isEmpty()) {
-            Person person = personService.insert(vehicle.getPerson());
-            vehicle.setPerson(person);
+            person = personService.insert(vehicle.getPerson());
+        } else {
+            person = optional.get();
         }
+
+        vehicle.setPerson(person);
 
         return repository.save(vehicle);
     }
@@ -50,7 +55,7 @@ class VehicleService implements VehicleServiceInterface {
     }
 
     @Override
-    public Optional<Vehicle> findByPersonIdAndPlate(String personId, String plate) {
-        return repository.findVehicleByPlateEqualsAndPerson_Id(plate, personId);
+    public Optional<Vehicle> findByPersonDocumentAndPlate(String personId, String plate) {
+        return repository.findVehicleByPlateEqualsAndPerson_Document(plate, personId);
     }
 }

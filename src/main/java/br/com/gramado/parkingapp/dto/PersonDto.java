@@ -1,5 +1,6 @@
 package br.com.gramado.parkingapp.dto;
 
+import br.com.gramado.parkingapp.util.DocumentType;
 import br.com.gramado.parkingapp.util.TypePayment;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
@@ -15,7 +16,11 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PersonDto extends DtoIdString {
+public class PersonDto extends Dto {
+
+    @NotBlank(message = "É um campo obrigatório")
+    @Schema(example = "896.987.156-98")
+    private String document;
 
     @Schema(example = "Isabela")
     @NotBlank(message = "É um campo obrigatório")
@@ -34,4 +39,8 @@ public class PersonDto extends DtoIdString {
 
     @NotNull
     private TypePayment preferentialPayment;
+
+    @NotNull
+    @Schema(example = "CPF")
+    private DocumentType documentType;
 }

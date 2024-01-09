@@ -22,7 +22,7 @@ public class InsertPersonCommand {
     public PersonDto execute(PersonDto personDto) throws ValidationsException {
         Person person = converter.convert(personDto);
 
-        Optional<Person> saved = service.findById(person.getId());
+        Optional<Person> saved = service.findByDocument(person.getDocument());
 
         if (saved.isPresent()) {
             throw new ValidationsException("Pessoa j\u00E1 cadastrada");

@@ -10,7 +10,7 @@ public interface PersonServiceInterface {
 
     Person insert(Person person);
 
-    Optional<Person> findById(String identifier);
+    Optional<Person> findByDocument(String document);
 
     Page<Person> findAll(Pagination pagination);
 

@@ -20,7 +20,7 @@ public class FindPersonById {
     private PersonConverter personConverter;
 
     public PersonDto execute(String identifier) throws NotFoundException {
-        Optional<Person> person = personService.findById(identifier);
+        Optional<Person> person = personService.findByDocument(identifier);
 
         if (person.isEmpty()) {
             throw new NotFoundException(identifier, "Person");

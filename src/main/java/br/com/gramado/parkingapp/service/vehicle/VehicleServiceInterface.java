@@ -14,5 +14,5 @@ public interface VehicleServiceInterface {
 
     Vehicle update(Vehicle vehicle);
 
-    Optional<Vehicle> findByPersonIdAndPlate(String personId, String plate);
+    Optional<Vehicle> findByPersonDocumentAndPlate(String personId, String plate);
 }

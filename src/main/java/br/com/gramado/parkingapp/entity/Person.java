@@ -1,5 +1,6 @@
 package br.com.gramado.parkingapp.entity;
 
+import br.com.gramado.parkingapp.util.DocumentType;
 import br.com.gramado.parkingapp.util.TypePayment;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,7 +19,11 @@ import java.io.Serializable;
 public class Person implements Serializable {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(nullable = false)
+    private String document;
 
     @Column(nullable = false)
     private String name;
@@ -34,4 +39,7 @@ public class Person implements Serializable {
 
     @Enumerated(value = EnumType.STRING)
     private TypePayment preferentialPayment;
+
+    @Enumerated(value = EnumType.STRING)
+    private DocumentType documentType;
 }

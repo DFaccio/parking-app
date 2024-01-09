@@ -26,15 +26,15 @@ public class InsertVehicleCommand {
     public VehicleDto execute(VehicleDto vehicleDto) throws ValidationsException {
         Vehicle vehicle = converter.convert(vehicleDto);
 
-        verifyVehiculeAlreadySaved(vehicle.getPlate(), vehicle.getPerson().getId());
+        verifyVehicleAlreadySaved(vehicle.getPlate(), vehicle.getPerson().getDocument());
 
         vehicle = service.insert(vehicle);
 
         return converter.convert(vehicle);
     }
 
-    private void verifyVehiculeAlreadySaved(String plate, String personId) throws ValidationsException {
-        Optional<Vehicle> optional = service.findByPersonIdAndPlate(personId, plate);
+    private void verifyVehicleAlreadySaved(String plate, String personDocument) throws ValidationsException {
+        Optional<Vehicle> optional = service.findByPersonDocumentAndPlate(personDocument, plate);
 
         if (optional.isPresent()) {
             throw new ValidationsException("Esta pessoa já possui esse veículo cadastrado");

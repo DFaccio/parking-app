@@ -20,7 +20,7 @@ public class FindVehicleCommand {
     private VehicleServiceInterface service;
 
     public VehicleDto execute(String plate, String person) throws ValidationsException {
-        Optional<Vehicle> optional = service.findByPersonIdAndPlate(person, plate);
+        Optional<Vehicle> optional = service.findByPersonDocumentAndPlate(person, plate);
 
         if (optional.isEmpty()) {
             throw new ValidationsException("Veículo não encontrado");

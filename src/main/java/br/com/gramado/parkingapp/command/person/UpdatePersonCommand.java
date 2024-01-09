@@ -5,6 +5,7 @@ import br.com.gramado.parkingapp.entity.Person;
 import br.com.gramado.parkingapp.service.person.PersonServiceInterface;
 import br.com.gramado.parkingapp.util.converter.PersonConverter;
 import br.com.gramado.parkingapp.util.exception.NotFoundException;
+import br.com.gramado.parkingapp.util.exception.ValidationsException;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 
@@ -19,16 +20,14 @@ public class UpdatePersonCommand {
     @Resource
     private PersonConverter converter;
 
-    public PersonDto execute(PersonDto personDto) throws NotFoundException {
-        Optional<Person> savedOptional = personServiceInterface.findById(personDto.getId());
+    public PersonDto execute(PersonDto personDto) throws NotFoundException, ValidationsException {
+        Optional<Person> savedOptional = personServiceInterface.findByDocument(personDto.getDocument());
 
         if (savedOptional.isEmpty()) {
             throw new NotFoundException(personDto.getId(), "Person");
         }
 
         Person toUpdate = converter.convert(personDto);
-
-        toUpdate.setId(savedOptional.get().getId());
 
         toUpdate = personServiceInterface.update(toUpdate);
 

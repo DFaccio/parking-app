@@ -31,8 +31,8 @@ class PersonService implements PersonServiceInterface {
     }
 
     @Override
-    public Optional<Person> findById(String identifier) {
-        return repository.findById(identifier);
+    public Optional<Person> findByDocument(String document) {
+        return repository.findPersonByDocumentEquals(document);
     }
 
     @Override
