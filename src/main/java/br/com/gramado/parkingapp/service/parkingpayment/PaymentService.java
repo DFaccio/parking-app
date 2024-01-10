@@ -1,7 +1,7 @@
 package br.com.gramado.parkingapp.service.parkingpayment;
 
-import br.com.gramado.parkingapp.entity.ParkingPayment;
-import br.com.gramado.parkingapp.repository.ParkingPaymentRepository;
+import br.com.gramado.parkingapp.entity.Payment;
+import br.com.gramado.parkingapp.repository.PaymentRepository;
 import br.com.gramado.parkingapp.util.pagination.Pagination;
 import jakarta.annotation.Resource;
 import org.springframework.data.domain.Page;
@@ -13,33 +13,32 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class ParkingPaymentService implements ParkingPaymentServiceInterface {
+class PaymentService implements PaymentServiceInterface {
 
     private static final String SORT = "id";
 
     @Resource
-    private ParkingPaymentRepository repository;
+    private PaymentRepository repository;
 
     @Override
-    public ParkingPayment insert(ParkingPayment parkingPayment) {
-        return repository.save(parkingPayment);
+    public Payment insert(Payment payment) {
+        return repository.save(payment);
     }
 
     @Override
-    public Optional<ParkingPayment> findById(Integer identifier) {
+    public Optional<Payment> findById(Integer identifier) {
         return repository.findById(identifier);
     }
 
     @Override
-    public ParkingPayment update(ParkingPayment parkingPayment) {
-        return repository.save(parkingPayment);
+    public Payment update(Payment payment) {
+        return repository.save(payment);
     }
 
     @Override
-    public Page<ParkingPayment> findAll(Pagination pagination) {
+    public Page<Payment> findAll(Pagination pagination) {
         Pageable pageable = PageRequest.of(pagination.getPage(), pagination.getPageSize(), Sort.by(SORT));
 
         return repository.findAll(pageable);
     }
-
 }

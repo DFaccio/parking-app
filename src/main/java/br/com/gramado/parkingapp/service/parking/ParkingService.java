@@ -10,10 +10,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ParkingService implements ParkingServiceInterface {
+class ParkingService implements ParkingServiceInterface {
 
     private static final String SORT = "id";
 
@@ -31,14 +32,24 @@ public class ParkingService implements ParkingServiceInterface {
     }
 
     @Override
+    public Optional<Parking> findByPaymentId(Integer id) {
+        return repository.findByPaymentId(id);
+    }
+
+    @Override
+    public List<Parking> findAllByPriceTableId(Integer id) {
+        return repository.findParkingByPriceTableId(id);
+    }
+
+    @Override
     public Optional<Parking> findById(Integer identifier) {
         return repository.findById(identifier);
     }
 
     @Override
-    public Page<Parking> findAll(Pagination pagination) {
+    public Page<Parking> findAll(Pagination pagination, boolean isFinished) {
         Pageable pageable = PageRequest.of(pagination.getPage(), pagination.getPageSize(), Sort.by(SORT));
 
-        return repository.findAll(pageable);
+        return repository.findParkingByIsFinished(pageable, isFinished);
     }
 }

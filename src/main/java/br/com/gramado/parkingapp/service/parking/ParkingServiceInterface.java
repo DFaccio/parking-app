@@ -4,6 +4,7 @@ import br.com.gramado.parkingapp.entity.Parking;
 import br.com.gramado.parkingapp.util.pagination.Pagination;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ParkingServiceInterface {
@@ -12,8 +13,11 @@ public interface ParkingServiceInterface {
 
     Optional<Parking> findById(Integer identifier);
 
-    Page<Parking> findAll(Pagination pagination);
+    Page<Parking> findAll(Pagination pagination, boolean isFinished);
 
     Parking update(Parking parking);
 
+    Optional<Parking> findByPaymentId(Integer id);
+
+    List<Parking> findAllByPriceTableId(Integer id);
 }

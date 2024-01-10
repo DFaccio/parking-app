@@ -1,11 +1,14 @@
 package br.com.gramado.parkingapp.dto;
 
+import br.com.gramado.parkingapp.dto.payment.PaymentDto;
+import br.com.gramado.parkingapp.dto.pricetable.PriceTableDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Getter
@@ -24,4 +27,8 @@ public class ParkingDto extends Dto {
 
     @Schema(example = "EST-01")
     private String plate;
+
+    private PriceTableDto priceTable;
+
+    private PaymentDto payment;
 }

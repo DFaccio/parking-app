@@ -22,7 +22,7 @@ public interface Converter<T extends Serializable, D extends Dto> {
 
         paged.setPage(new Pagination(page.getNumber(), page.getSize(), page.getTotalPages()));
 
-        List<D> dada = page.get().map(this::convert).toList();
+        List<D> dada = convertEntity(page.get().toList());
 
         paged.setData(dada);
 

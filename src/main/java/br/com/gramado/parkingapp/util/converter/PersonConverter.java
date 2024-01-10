@@ -2,7 +2,7 @@ package br.com.gramado.parkingapp.util.converter;
 
 import br.com.gramado.parkingapp.dto.PersonDto;
 import br.com.gramado.parkingapp.entity.Person;
-import br.com.gramado.parkingapp.util.DocumentType;
+import br.com.gramado.parkingapp.util.enums.DocumentType;
 import br.com.gramado.parkingapp.util.exception.ValidationsException;
 import org.springframework.stereotype.Component;
 

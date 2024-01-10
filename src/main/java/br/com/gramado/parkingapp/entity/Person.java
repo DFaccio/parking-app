@@ -1,7 +1,7 @@
 package br.com.gramado.parkingapp.entity;
 
-import br.com.gramado.parkingapp.util.DocumentType;
-import br.com.gramado.parkingapp.util.TypePayment;
+import br.com.gramado.parkingapp.util.enums.DocumentType;
+import br.com.gramado.parkingapp.util.enums.TypePayment;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

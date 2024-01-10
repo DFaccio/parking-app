@@ -37,7 +37,7 @@ public class InsertVehicleCommand {
         Optional<Vehicle> optional = service.findByPersonDocumentAndPlate(personDocument, plate);
 
         if (optional.isPresent()) {
-            throw new ValidationsException("Esta pessoa já possui esse veículo cadastrado");
+            throw new ValidationsException("Esta pessoa j\u00E1 possui esse ve\u00EDculo cadastrado");
         }
     }
 }
