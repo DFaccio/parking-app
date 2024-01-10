@@ -12,6 +12,12 @@ public class ParkingConverter implements Converter<Parking, ParkingDto> {
     @Resource
     private VehicleConverter vehicleConverter;
 
+    @Resource
+    private PaymentConverter paymentConverter;
+
+    @Resource
+    private PriceTableConverter priceTableConverter;
+
     @Override
     public ParkingDto convert(Parking entity) {
         ParkingDto dto = new ParkingDto();
@@ -20,7 +26,9 @@ public class ParkingConverter implements Converter<Parking, ParkingDto> {
         dto.setDateTimeStart(entity.getDateTimeStart());
         dto.setDateTimeEnd(entity.getDateTimeEnd());
         dto.setPlate(entity.getPlate());
-        dto.setVehicle(vehicleConverter.convert(entity.getVehicule()));
+        dto.setVehicle(vehicleConverter.convert(entity.getVehicle()));
+        dto.setPayment(paymentConverter.convert(entity.getPayment()));
+        dto.setPriceTable(priceTableConverter.convert(entity.getPriceTable()));
 
         return dto;
     }
@@ -33,9 +41,10 @@ public class ParkingConverter implements Converter<Parking, ParkingDto> {
         entity.setDateTimeStart(dto.getDateTimeStart());
         entity.setDateTimeEnd(dto.getDateTimeEnd());
         entity.setPlate(dto.getPlate());
-        entity.setVehicule(vehicleConverter.convert(dto.getVehicle()));
+        entity.setVehicle(vehicleConverter.convert(dto.getVehicle()));
+        entity.setPayment(paymentConverter.convert(dto.getPayment()));
+        entity.setPriceTable(priceTableConverter.convert(dto.getPriceTable()));
 
         return entity;
     }
-
 }

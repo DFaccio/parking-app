@@ -1,4 +1,4 @@
-package br.com.gramado.parkingapp.util;
+package br.com.gramado.parkingapp.util.enums;
 
 public enum DocumentType {
 

@@ -18,8 +18,8 @@ public class FindAllParkingCommand {
     @Resource
     private ParkingConverter parkingConverter;
 
-    public PagedResponse<ParkingDto> execute(Pagination page) {
-        Page<Parking> result = parkingService.findAll(page);
+    public PagedResponse<ParkingDto> execute(Pagination page, boolean isFinished) {
+        Page<Parking> result = parkingService.findAll(page, isFinished);
 
         return parkingConverter.convertEntities(result);
     }
