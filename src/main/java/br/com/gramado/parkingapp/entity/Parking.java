@@ -1,6 +1,5 @@
 package br.com.gramado.parkingapp.entity;
 
-import br.com.gramado.parkingapp.util.TypeParking;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +8,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "parking")
 @Getter
@@ -16,16 +16,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Parking implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "vehicule_id")
-    private Vehicle vehicule;
-
-    @Enumerated(value = EnumType.STRING)
-    private TypeParking typeParking;
+    @JoinColumn(name = "vehicle_id")
+    private Vehicle vehicle;
 
     @Column
     @Temporal(TemporalType.TIMESTAMP)
@@ -37,4 +35,15 @@ public class Parking implements Serializable {
 
     @Column
     private String plate;
+
+    @ManyToOne
+    @JoinColumn(name = "price_table_id")
+    private PriceTable priceTable;
+
+    @OneToOne
+    @JoinColumn(name = "payment_id")
+    private Payment payment;
+
+    @Column
+    private boolean isFinished;
 }
