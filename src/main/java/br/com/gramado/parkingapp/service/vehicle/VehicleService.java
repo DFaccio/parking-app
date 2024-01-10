@@ -58,4 +58,9 @@ class VehicleService implements VehicleServiceInterface {
     public Optional<Vehicle> findByPersonDocumentAndPlate(String personId, String plate) {
         return repository.findVehicleByPlateEqualsAndPerson_Document(plate, personId);
     }
+
+    @Override
+    public Optional<Vehicle> findById(Integer vehicleId) {
+        return repository.findById(vehicleId);
+    }
 }

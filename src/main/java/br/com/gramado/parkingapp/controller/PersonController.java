@@ -54,7 +54,7 @@ public class PersonController {
 
     @Operation(summary = "Atualizar pessoa")
     @PutMapping
-    public ResponseEntity<PersonDto> update(@Valid @RequestBody PersonDto personDto) throws NotFoundException, ValidationsException {
+    public ResponseEntity<PersonDto> update(@Valid @RequestBody PersonDto personDto) throws NotFoundException {
         PersonDto person = updateCommand.execute(personDto);
 
         return ResponseEntity.ok(person);

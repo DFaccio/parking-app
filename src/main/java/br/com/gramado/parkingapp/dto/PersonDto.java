@@ -1,7 +1,7 @@
 package br.com.gramado.parkingapp.dto;
 
-import br.com.gramado.parkingapp.util.DocumentType;
-import br.com.gramado.parkingapp.util.TypePayment;
+import br.com.gramado.parkingapp.util.enums.DocumentType;
+import br.com.gramado.parkingapp.util.enums.TypePayment;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
