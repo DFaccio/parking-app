@@ -2,6 +2,7 @@ package br.com.gramado.parkingapp.service.parking;
 
 import br.com.gramado.parkingapp.entity.Parking;
 import br.com.gramado.parkingapp.repository.ParkingRepository;
+import br.com.gramado.parkingapp.util.enums.TypeCharge;
 import br.com.gramado.parkingapp.util.pagination.Pagination;
 import jakarta.annotation.Resource;
 import org.springframework.data.domain.Page;
@@ -51,5 +52,20 @@ class ParkingService implements ParkingServiceInterface {
         Pageable pageable = PageRequest.of(pagination.getPage(), pagination.getPageSize(), Sort.by(SORT));
 
         return repository.findParkingByIsFinished(pageable, isFinished);
+    }
+
+    @Override
+    public List<Parking> findAllByIsFinished(boolean isFinished) {
+        return repository.findAllByIsFinished(isFinished);
+    }
+
+    @Override
+    public List<Parking> findAllByIsFinishedAndPriceTableEqualsFixed(boolean isFinished) {
+        return repository.findAllByIsFinishedAndPriceTableTypeChargeEquals(isFinished, TypeCharge.FIXED);
+    }
+
+    @Override
+    public void update(List<Parking> parkingLots) {
+        repository.saveAllAndFlush(parkingLots);
     }
 }

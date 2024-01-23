@@ -20,4 +20,10 @@ public interface ParkingServiceInterface {
     Optional<Parking> findByPaymentId(Integer id);
 
     List<Parking> findAllByPriceTableId(Integer id);
+
+    List<Parking> findAllByIsFinished(boolean isFinished);
+
+    List<Parking> findAllByIsFinishedAndPriceTableEqualsFixed(boolean isFinished);
+
+    void update(List<Parking> toUpdate);
 }
