@@ -18,6 +18,7 @@ public interface ParkingRepository extends JpaRepository<Parking, Integer> {
     Optional<Parking> findByPaymentId(Integer id);
 
     List<Parking> findParkingByPriceTableId(Integer id);
+
     List<Parking> findAllByIsFinished(boolean isFinished);
 
     List<Parking> findAllByIsFinishedAndPriceTableTypeChargeEquals(boolean isFinished, TypeCharge fixed);
