@@ -29,11 +29,12 @@ public class PersonDto extends Dto {
     @Schema(example = "false")
     private boolean active;
 
-    @NotBlank(message = "É um campo obrigatório")
     @Pattern(regexp = "^\\+55[0-9]{2}9[0-9]{4}-[0-9]{4}")
     private String phone;
 
     @Email
+    @NotBlank(message = "É um campo obrigatório")
+    @NotNull
     @Schema(example = "isabela@gmail.com")
     private String email;
 

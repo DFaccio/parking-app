@@ -1,6 +1,7 @@
 package br.com.gramado.parkingapp.repository;
 
 import br.com.gramado.parkingapp.entity.Parking;
+import br.com.gramado.parkingapp.util.enums.TypeCharge;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,4 +18,7 @@ public interface ParkingRepository extends JpaRepository<Parking, Integer> {
     Optional<Parking> findByPaymentId(Integer id);
 
     List<Parking> findParkingByPriceTableId(Integer id);
+    List<Parking> findAllByIsFinished(boolean isFinished);
+
+    List<Parking> findAllByIsFinishedAndPriceTableTypeChargeEquals(boolean isFinished, TypeCharge fixed);
 }
