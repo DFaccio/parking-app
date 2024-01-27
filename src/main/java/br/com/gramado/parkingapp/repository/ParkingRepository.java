@@ -1,7 +1,6 @@
 package br.com.gramado.parkingapp.repository;
 
 import br.com.gramado.parkingapp.entity.Parking;
-
 import br.com.gramado.parkingapp.util.enums.TypeCharge;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
