@@ -2,24 +2,24 @@ version: '3.8'
 
 services:
   postgres:
-    image: postgres:latest
+    image: postgres:16.0
     container_name: postgres
     volumes:
       - postgres-data:/var/lib/postgresql/data
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_PASSWORD: "root"
       POSTGRES_DB: "parquimetro_db"
     ports:
       - "15432:5432"
     networks:
-      - postgres-compose-network
+      - parking-app-network
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
     volumes:
       - ./servers.json:/pgadmin4/servers.json
-    restart: always
+    restart: unless-stopped
     environment:
       PGADMIN_DEFAULT_EMAIL: "pgadmin@gmail.com"
       PGADMIN_DEFAULT_PASSWORD: "postgres"
@@ -28,25 +28,27 @@ services:
     depends_on:
       - postgres
     networks:
-      - postgres-compose-network
-  parkingapp:
+      - parking-app-network
+  parking-app:
     build:
       context: .
-    container_name: parkingapp
+    container_name: parking-app
     ports:
       - "8080:8080"
     depends_on:
       - postgres
+    restart: unless-stopped
     environment:
       SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/parquimetro_db"
       SPRING_DATASOURCE_USERNAME: "postgres"
       SPRING_DATASOURCE_PASSWORD: "root"
+      SPRING_MAIL_USERNAME: "parkingfiap860@gmail.com"
+      SPRING_MAIL_PASSWORD: "wxhn hnza adsb shqm"
     networks:
-      - postgres-compose-network
+      - parking-app-network
 
 volumes:
   postgres-data:
 
 networks:
-  postgres-compose-network:
-    driver: bridge
+  parking-app-network:
