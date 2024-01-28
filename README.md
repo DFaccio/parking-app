@@ -30,13 +30,32 @@ O projeto utiliza as tecnologias abaixo. Desta forma, será necessário instala�
 
 ---
 ### Configurações
-Realize as configurações abaixo no application.properties para execução local. O projeto também pode ser executado através de Docker. Para tal, execute o arquivo compose.
+
+#### Executar localmente
 
 * spring.datasource.url:
 
         jdbc:postgresql://localhost:{porta da instalação do PostgreSQL}/{banco criado para executar a aplicação}
 * spring.datasource.username: altere *admin* para o usuário que deseja utilizar
 * spring.datasource.password: altere *root* pela senha do usuário adicionada na propriedade anterior
+* spring.mail.username: adicione o e-mail
+* spring.mail.password: adicione a senha
+
+### Executar através do Docker
+Neste têm-se duas opções. Executar apenas a aplicação através do Docker ou a aplicação e o banco, utilizando o arquivo compose.
+
+Caso deseja utilizar apenas a aplicação em docker, realize as mesmas configurações no application.properties como se fosse executar local. 
+Faça build do arquivo e por fim crie o container utilizando network igual a host.
+
+    docker build -t nome_imagem . 
+    docker run --network="host" --name nome_imagem nome_container
+
+Caso irá executar tudo em container, basta executar o comando abaixo.
+    
+    docker compose up
+
+Lembrando que os comandos foram apresentados como se fossem executados a partir do root do diretório.
+
 ---
 ### Importante
 O sistema emitirá e-mails, após a finalização do uso do estacionamento. 
