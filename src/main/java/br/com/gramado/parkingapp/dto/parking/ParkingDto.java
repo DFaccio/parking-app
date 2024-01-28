@@ -1,5 +1,7 @@
-package br.com.gramado.parkingapp.dto;
+package br.com.gramado.parkingapp.dto.parking;
 
+import br.com.gramado.parkingapp.dto.Dto;
+import br.com.gramado.parkingapp.dto.VehicleDto;
 import br.com.gramado.parkingapp.dto.payment.PaymentDto;
 import br.com.gramado.parkingapp.dto.pricetable.PriceTableDto;
 import io.swagger.v3.oas.annotations.media.Schema;

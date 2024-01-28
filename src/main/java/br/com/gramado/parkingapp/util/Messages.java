@@ -14,9 +14,9 @@ public interface Messages {
                 .append(price);
 
         if (TypeCharge.HOUR.equals(typeCharge))
-            message.append("\nValor por hora R$ ");
+            message.append("\nValor por hora: R$ ");
         else
-            message.append("\nValor por período R$ ");
+            message.append("\nValor por período: R$ ");
 
         message.append(value)
                 .append("\nInício: ")

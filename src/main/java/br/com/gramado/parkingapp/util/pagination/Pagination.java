@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Pagination {
@@ -19,9 +17,13 @@ public class Pagination {
     private Integer pageSize;
 
     @Schema(example = "1")
+    @Getter
+    @Setter
     private Integer totalPages;
 
     private static final Integer DEFAULT_PAGE_SIZE = 10;
+
+    private static final Integer DEFAULT_MAX_PAGE_SIZE = 1000;
 
     private static final Integer DEFAULT_INITIAL_PAGE = 0;
 
@@ -41,6 +43,8 @@ public class Pagination {
     public void setPageSize(Integer pageSize) {
         if (pageSize == null) {
             this.pageSize = DEFAULT_PAGE_SIZE;
+        } else if (pageSize > DEFAULT_MAX_PAGE_SIZE) {
+            this.pageSize = DEFAULT_MAX_PAGE_SIZE;
         } else {
             this.pageSize = pageSize;
         }
