@@ -1,8 +1,8 @@
 package br.com.gramado.parkingapp.command.parking;
 
 import br.com.gramado.parkingapp.command.payment.InsertPaymentCommand;
-import br.com.gramado.parkingapp.dto.ParkingCreateDto;
-import br.com.gramado.parkingapp.dto.ParkingDto;
+import br.com.gramado.parkingapp.dto.parking.ParkingCreateDto;
+import br.com.gramado.parkingapp.dto.parking.ParkingDto;
 import br.com.gramado.parkingapp.entity.Parking;
 import br.com.gramado.parkingapp.entity.Payment;
 import br.com.gramado.parkingapp.entity.PriceTable;
@@ -46,19 +46,23 @@ public class InsertParkingCommand {
         Vehicle vehicle = verifyAndGetVehicle(parkingDto.getVehicleId());
         PriceTable priceTable = verifyAndGetPriceTable(parkingDto.getPriceTableId());
 
+        verifyPersonIsActive(vehicle.getPerson().isActive());
+
         TypePayment typePayment = parkingDto.getTypePayment() == null ?
                 vehicle.getPerson().getPreferentialPayment() :
                 parkingDto.getTypePayment();
 
         Payment payment = insertPaymentCommand.execute(priceTable, typePayment);
 
-        Parking parking = new Parking();
-        parking.setPayment(payment);
-        parking.setVehicle(vehicle);
-        parking.setPriceTable(priceTable);
-        parking.setPlate(parkingDto.getPlate());
-        parking.setFinished(false);
-        parking.setDateTimeStart(TimeUtils.getTime());
+        Parking parking = new Parking(
+                null,
+                vehicle,
+                TimeUtils.getTime(),
+                null,
+                parkingDto.getPlate(),
+                priceTable,
+                payment,
+                false);
 
         if (TypeCharge.FIXED.equals(priceTable.getTypeCharge())) {
             parking.setDateTimeEnd(TimeUtils.addDurationInTime(parking.getDateTimeStart(), priceTable.getDuration()));
@@ -67,6 +71,12 @@ public class InsertParkingCommand {
         parking = parkingService.insert(parking);
 
         return parkingConverter.convert(parking);
+    }
+
+    private void verifyPersonIsActive(boolean active) throws ValidationsException {
+        if (!active) {
+            throw new ValidationsException("\u00C9 necess\u00E1rio que o cadastro esteja ativo para registrar estacionamento!");
+        }
     }
 
     private Vehicle verifyAndGetVehicle(Integer vehicleId) throws ValidationsException {

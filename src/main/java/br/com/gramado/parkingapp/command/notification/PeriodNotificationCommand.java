@@ -32,6 +32,8 @@ public class PeriodNotificationCommand {
 
     private static final Integer TEN_MINUTES_IN_SECONDS = 600;
 
+    private static final Integer FIVE_MINUTES_IN_SECONDS = 300;
+
     private static final Integer HOURS_IN_SECONDS = 3600;
 
     @Scheduled(fixedRateString = "${time.to.run.notification.schedule}", timeUnit = TimeUnit.MINUTES)
@@ -60,7 +62,8 @@ public class PeriodNotificationCommand {
 
         int durationWithoutHours = (int) (HOURS_IN_SECONDS - duration % HOURS_IN_SECONDS);
 
-        if (durationWithoutHours <= TEN_MINUTES_IN_SECONDS) {
+        // Vai notificar contanto que seja mais que 5 minutos e menor/igual que 10
+        if (durationWithoutHours >= FIVE_MINUTES_IN_SECONDS && durationWithoutHours <= TEN_MINUTES_IN_SECONDS) {
             BigDecimal price = value
                     .multiply(new BigDecimal(duration).divide(new BigDecimal(HOURS_IN_SECONDS), RoundingMode.CEILING));
 
@@ -71,11 +74,9 @@ public class PeriodNotificationCommand {
     private void checkNeedNotifyEndFixedPeriod(LocalDateTime timeEnd, String email) {
         long duration = TimeUtils.getDurationBetweenInSeconds(TimeUtils.getTime(), timeEnd);
 
-        int durationWithoutHours = (int) (duration % HOURS_IN_SECONDS);
-
         // duration < 0 já passou o tempo de finalização.
-        if (duration > 0 && durationWithoutHours <= TEN_MINUTES_IN_SECONDS) {
-            emailService.sendEmailEndFixedPeriod(durationWithoutHours / 60, email);
+        if (duration > 0 && duration <= TEN_MINUTES_IN_SECONDS) {
+            emailService.sendEmailEndFixedPeriod((int) (duration / 60), email);
         }
     }
 }

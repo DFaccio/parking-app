@@ -19,7 +19,6 @@ import java.math.BigDecimal;
 public class PriceTableUpdateDto extends Dto {
 
     @NotNull
-    @NotBlank
     @Schema(example = "5.00")
     private BigDecimal value;
 

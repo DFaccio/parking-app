@@ -61,7 +61,9 @@ public class ExceptionHandlerUtil {
         setExceptionData(status.value(),
                 "Data Error",
                 request.getRequestURI(),
-                e.getFieldError() == null ? e.getMessage() : e.getFieldError().getDefaultMessage()
+                e.getFieldError() == null ?
+                        e.getMessage() :
+                        e.getFieldError().getField() + ": " + e.getFieldError().getDefaultMessage()
         );
 
         return ResponseEntity.status(status).body(this.err);

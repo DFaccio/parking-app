@@ -45,7 +45,7 @@ public class PersonController {
 
     @Operation(summary = "Recuperar pessoas com resultado paginado")
     @GetMapping
-    public ResponseEntity<PagedResponse<PersonDto>> findAll(@Parameter(description = "Default value 10", example = "10") @RequestParam(required = false) Integer pageSize,
+    public ResponseEntity<PagedResponse<PersonDto>> findAll(@Parameter(description = "Default value 10. Max value 1000", example = "10") @RequestParam(required = false) Integer pageSize,
                                                             @Parameter(description = "Default value 0", example = "0") @RequestParam(required = false) Integer initialPage) {
         Pagination page = new Pagination(initialPage, pageSize);
 
