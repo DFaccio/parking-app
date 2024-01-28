@@ -77,7 +77,7 @@ public class PriceTableController {
 
     @Operation(summary = "Recuperar tabela de preço por parâmetros com resultado paginado")
     @GetMapping
-    public ResponseEntity<PagedResponse<PriceTableDto>> findAll(@Parameter(description = "Default value 10", example = "10") @RequestParam(required = false) Integer pageSize,
+    public ResponseEntity<PagedResponse<PriceTableDto>> findAll(@Parameter(description = "Default value 10. Max value 1000", example = "10") @RequestParam(required = false) Integer pageSize,
                                                                 @Parameter(description = "Default value 0", example = "0") @RequestParam(required = false) Integer initialPage,
                                                                 @Parameter(example = "15") @RequestParam(required = false) Integer id,
                                                                 @Parameter(example = "Happy Hour") @RequestParam(required = false) String name,

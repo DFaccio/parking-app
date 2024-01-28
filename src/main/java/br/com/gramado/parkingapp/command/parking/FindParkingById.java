@@ -1,6 +1,6 @@
 package br.com.gramado.parkingapp.command.parking;
 
-import br.com.gramado.parkingapp.dto.ParkingDto;
+import br.com.gramado.parkingapp.dto.parking.ParkingDto;
 import br.com.gramado.parkingapp.entity.Parking;
 import br.com.gramado.parkingapp.service.parking.ParkingServiceInterface;
 import br.com.gramado.parkingapp.util.converter.ParkingConverter;

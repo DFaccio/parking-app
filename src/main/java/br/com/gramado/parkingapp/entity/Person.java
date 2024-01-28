@@ -31,15 +31,17 @@ public class Person implements Serializable {
     @Column
     private boolean active;
 
-    @Column(nullable = false)
+    @Column
     private String phone;
 
-    @Column
+    @Column(nullable = false)
     private String email;
 
+    @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private TypePayment preferentialPayment;
 
+    @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private DocumentType documentType;
 }

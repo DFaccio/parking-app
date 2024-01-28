@@ -1,9 +1,9 @@
-package br.com.gramado.parkingapp.dto;
+package br.com.gramado.parkingapp.dto.parking;
 
+import br.com.gramado.parkingapp.dto.Dto;
 import br.com.gramado.parkingapp.util.enums.TypePayment;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,12 +16,10 @@ import lombok.Setter;
 public class ParkingCreateDto extends Dto {
 
     @NotNull
-    @NotBlank
     @Schema(example = "20")
     private Integer vehicleId;
 
     @NotNull
-    @NotBlank
     @Schema(example = "15")
     private Integer priceTableId;
 

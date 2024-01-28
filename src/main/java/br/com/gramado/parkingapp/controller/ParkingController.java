@@ -4,8 +4,8 @@ import br.com.gramado.parkingapp.command.parking.FindAllParkingCommand;
 import br.com.gramado.parkingapp.command.parking.FindParkingById;
 import br.com.gramado.parkingapp.command.parking.FinishParkingManuallyCommand;
 import br.com.gramado.parkingapp.command.parking.InsertParkingCommand;
-import br.com.gramado.parkingapp.dto.ParkingCreateDto;
-import br.com.gramado.parkingapp.dto.ParkingDto;
+import br.com.gramado.parkingapp.dto.parking.ParkingCreateDto;
+import br.com.gramado.parkingapp.dto.parking.ParkingDto;
 import br.com.gramado.parkingapp.util.exception.NotFoundException;
 import br.com.gramado.parkingapp.util.exception.ValidationsException;
 import br.com.gramado.parkingapp.util.pagination.PagedResponse;
@@ -45,7 +45,7 @@ public class ParkingController {
 
     @Operation(summary = "Recuperar estacionamento com resultado paginado")
     @GetMapping
-    public ResponseEntity<PagedResponse<ParkingDto>> findAll(@Parameter(description = "Default value 10", example = "10") @RequestParam(required = false) Integer pageSize,
+    public ResponseEntity<PagedResponse<ParkingDto>> findAll(@Parameter(description = "Default value 10. Max value 1000", example = "10") @RequestParam(required = false) Integer pageSize,
                                                              @Parameter(description = "Default value 0", example = "0") @RequestParam(required = false) Integer initialPage,
                                                              @Parameter(example = "false") @RequestParam boolean isFinished) {
         Pagination page = new Pagination(initialPage, pageSize);

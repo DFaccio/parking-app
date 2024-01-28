@@ -47,10 +47,11 @@ public class FinishParkingManuallyCommand {
 
         service.update(parking);
 
-        return Messages.createTerminationMessage(parking.getPayment().getPrice(),
+        return Messages.createTerminationMessage(
+                parking.getPayment().getPrice().setScale(2, RoundingMode.HALF_EVEN),
                 parking.getDateTimeStart(),
                 parking.getDateTimeEnd(),
-                parking.getPriceTable().getValue(),
+                parking.getPriceTable().getValue().setScale(2, RoundingMode.HALF_EVEN),
                 parking.getPriceTable().getTypeCharge());
     }
 
