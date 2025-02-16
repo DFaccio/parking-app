@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public interface EmailServiceInterface {
 
     default void sendHourlyAdditionTime(LocalDateTime start, LocalDateTime end, BigDecimal hourPrice, String email) {
-        BigDecimal total = hourPrice.multiply(new BigDecimal(TimeUtils.durantionBetweenDates(start, end)))
+        BigDecimal total = hourPrice.multiply(new BigDecimal(TimeUtils.durationBetweenDates(start, end)))
                 .setScale(2, RoundingMode.HALF_EVEN);
 
         sendEmail(email, "Adição de período", EmailMessages.createHourlyBillingMessage(total));

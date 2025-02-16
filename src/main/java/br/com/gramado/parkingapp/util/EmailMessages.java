@@ -25,7 +25,7 @@ public interface EmailMessages {
                 .append("\nFim: ")
                 .append(end)
                 .append("\nDuração: ")
-                .append(TimeUtils.durantionBetweenDates(start, end));
+                .append(TimeUtils.durationBetweenDates(start, end));
 
         return message.toString();
     }

@@ -21,19 +21,6 @@ public interface TimeUtils {
                 .plusNanos(duration.getNano());
     }
 
-    static LocalTime getDuration(LocalDateTime start, LocalDateTime end) {
-        long second = Duration.between(start, end).toSeconds();
-
-        long hours = second / 3600;
-        second %= 3600;
-
-        long minutes = second / 60;
-
-        second %= 60;
-
-        return LocalTime.of((int) hours, (int) minutes, (int) second);
-    }
-
     static long getDurationBetweenInSeconds(LocalDateTime start, LocalDateTime end) {
         return Duration.between(start, end).toSeconds();
     }
@@ -44,5 +31,9 @@ public interface TimeUtils {
         }
 
         return LocalTime.parse(duration, DateTimeFormatter.ISO_LOCAL_TIME);
+    }
+
+    static long durationBetweenDates(LocalDateTime start, LocalDateTime end) {
+        return Duration.between(start, end).toHours();
     }
 }
