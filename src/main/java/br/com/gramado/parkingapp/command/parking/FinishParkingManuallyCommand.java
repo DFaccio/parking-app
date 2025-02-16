@@ -2,7 +2,7 @@ package br.com.gramado.parkingapp.command.parking;
 
 import br.com.gramado.parkingapp.entity.Parking;
 import br.com.gramado.parkingapp.service.parking.ParkingServiceInterface;
-import br.com.gramado.parkingapp.util.Messages;
+import br.com.gramado.parkingapp.util.EmailMessages;
 import br.com.gramado.parkingapp.util.TimeUtils;
 import br.com.gramado.parkingapp.util.enums.TypeCharge;
 import br.com.gramado.parkingapp.util.exception.ValidationsException;
@@ -19,6 +19,8 @@ public class FinishParkingManuallyCommand {
 
     @Resource
     private ParkingServiceInterface service;
+
+    // TODO ON ENCERRAR MANUAL TEM QUE REMOVER DO REDIS/FILA
 
     public String execute(Integer parkingId) throws ValidationsException {
         Optional<Parking> optional = service.findById(parkingId);
@@ -47,7 +49,7 @@ public class FinishParkingManuallyCommand {
 
         service.update(parking);
 
-        return Messages.createTerminationMessage(
+        return EmailMessages.createTerminationMessage(
                 parking.getPayment().getPrice().setScale(2, RoundingMode.HALF_EVEN),
                 parking.getDateTimeStart(),
                 parking.getDateTimeEnd(),
