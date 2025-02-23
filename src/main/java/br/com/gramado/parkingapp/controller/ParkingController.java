@@ -1,9 +1,6 @@
 package br.com.gramado.parkingapp.controller;
 
-import br.com.gramado.parkingapp.command.parking.FindAllParkingCommand;
-import br.com.gramado.parkingapp.command.parking.FindParkingById;
-import br.com.gramado.parkingapp.command.parking.FinishParkingManuallyCommand;
-import br.com.gramado.parkingapp.command.parking.InsertParkingCommand;
+import br.com.gramado.parkingapp.command.parking.*;
 import br.com.gramado.parkingapp.dto.parking.ParkingCreateDto;
 import br.com.gramado.parkingapp.dto.parking.ParkingDto;
 import br.com.gramado.parkingapp.util.exception.NotFoundException;
@@ -33,7 +30,7 @@ public class ParkingController {
     private FindParkingById findParkingById;
 
     @Resource
-    private FinishParkingManuallyCommand finishParking;
+    private FinishParkingCommand finishParking;
 
     @Operation(summary = "Cadastrar estacionamento")
     @PostMapping
@@ -61,9 +58,9 @@ public class ParkingController {
 
     @Operation(summary = "Encerrar estacionamento manualmente")
     @PutMapping(value = "/finished/{id}")
-    public ResponseEntity<String> disable(@Parameter(example = "1") @PathVariable Integer id) throws ValidationsException {
-        String receipt = finishParking.execute(id);
+    public ResponseEntity<Void> disable(@Parameter(example = "1") @PathVariable Integer id) throws ValidationsException {
+        finishParking.execute(id);
 
-        return ResponseEntity.ok(receipt);
+        return ResponseEntity.noContent().build();
     }
 }

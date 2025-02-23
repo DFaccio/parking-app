@@ -14,6 +14,7 @@ services:
       - "15432:5432"
     networks:
       - parking-app-network
+
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
@@ -29,6 +30,7 @@ services:
       - postgres
     networks:
       - parking-app-network
+
   parking-app:
     build:
       context: .
@@ -46,6 +48,12 @@ services:
       SPRING_MAIL_PASSWORD: "wxhn hnza adsb shqm"
     networks:
       - parking-app-network
+
+  redis:
+    container_name: "redis"
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
 
 volumes:
   postgres-data:

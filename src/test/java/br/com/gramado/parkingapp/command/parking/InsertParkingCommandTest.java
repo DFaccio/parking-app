@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class InsertParkingCommandTest {
-
+    // TODO CORRIGIR/VALIDAR
     @Mock
     private ParkingServiceInterface parkingService;
 
@@ -105,7 +105,7 @@ class InsertParkingCommandTest {
 
         assertNotNull(result);
         verify(parkingService).insert(any(Parking.class));
-        verify(createNotificationCommand).createNotification(any(Parking.class));
+        verify(createNotificationCommand).createRedisExpirationEvent(any(Parking.class));
         verify(emailServiceInterface).sendEmailParkingStarted(
                 eq(person.getEmail()),
                 eq(priceTable.getTypeCharge()),

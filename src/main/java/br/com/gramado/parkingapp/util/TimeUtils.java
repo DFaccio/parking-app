@@ -1,5 +1,7 @@
 package br.com.gramado.parkingapp.util;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -15,14 +17,14 @@ public interface TimeUtils {
     }
 
     static LocalDateTime addDurationInTime(LocalDateTime timeToStart, LocalTime duration) {
-        return timeToStart.plusHours(duration.getHour())
-                .plusMinutes(duration.getMinute())
-                .plusSeconds(duration.getSecond())
-                .plusNanos(duration.getNano());
+        return timeToStart.plus(Duration.between(LocalTime.MIN, duration));
     }
 
-    static long getDurationBetweenInSeconds(LocalDateTime start, LocalDateTime end) {
-        return Duration.between(start, end).toSeconds();
+    static BigDecimal getDurationInHoursRoundedUp(LocalDateTime start, LocalDateTime end) {
+        long seconds = Duration.between(start, end).toSeconds();
+
+        return new BigDecimal(seconds)
+                .divide(new BigDecimal(3600), 0, RoundingMode.CEILING);
     }
 
     static LocalTime convertStringIntoTime(String duration) {
@@ -31,9 +33,5 @@ public interface TimeUtils {
         }
 
         return LocalTime.parse(duration, DateTimeFormatter.ISO_LOCAL_TIME);
-    }
-
-    static long durationBetweenDates(LocalDateTime start, LocalDateTime end) {
-        return Duration.between(start, end).toHours();
     }
 }

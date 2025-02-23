@@ -22,6 +22,8 @@ import static org.mockito.Mockito.*;
 
 class CreateOnRedisCommandTest {
 
+    // TODO CORRIGIR/VALIDAR
+
     @Mock
     private RedisTemplate<Integer, TicketEvent> redisTemplate;
 
@@ -51,7 +53,7 @@ class CreateOnRedisCommandTest {
 
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
 
-        createOnRedisCommand.createNotification(parking);
+        createOnRedisCommand.createRedisExpirationEvent(parking);
 
         verify(redisTemplate.opsForValue())
                 .set(eq(expectedEvent.getTicketId()), any(TicketEvent.class), any(Duration.class));

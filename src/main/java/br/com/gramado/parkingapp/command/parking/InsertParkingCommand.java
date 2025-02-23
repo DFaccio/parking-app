@@ -71,7 +71,7 @@ public class InsertParkingCommand {
 
         parking = parkingService.insert(parking);
 
-        createNotificationCommand.createNotification(parking);
+        createNotificationCommand.createRedisExpirationEvent(parking);
 
         emailServiceInterface.sendEmailParkingStarted(parking.getVehicle().getPerson().getEmail(),
                 parking.getPriceTable().getTypeCharge(), parking.getDateTimeEnd());

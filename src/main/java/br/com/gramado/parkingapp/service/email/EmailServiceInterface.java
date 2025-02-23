@@ -6,14 +6,13 @@ import br.com.gramado.parkingapp.util.TimeUtils;
 import br.com.gramado.parkingapp.util.enums.TypeCharge;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
 public interface EmailServiceInterface {
 
     default void sendHourlyAdditionTime(LocalDateTime start, LocalDateTime end, BigDecimal hourPrice, String email) {
-        BigDecimal total = hourPrice.multiply(new BigDecimal(TimeUtils.durationBetweenDates(start, end)))
-                .setScale(2, RoundingMode.HALF_EVEN);
+        BigDecimal total = TimeUtils.getDurationInHoursRoundedUp(start, end)
+                        .multiply(hourPrice);
 
         sendEmail(email, "Adição de período", EmailMessages.createHourlyBillingMessage(total));
     }

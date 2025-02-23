@@ -18,7 +18,7 @@ public class CreateOnRedisCommand {
         this.redisTemplate = redisTemplate;
     }
 
-    public void createNotification(Parking parking) {
+    public void createRedisExpirationEvent(Parking parking) {
         LocalDateTime expirationTime;
 
         if (TypeCharge.FIXED.equals(parking.getPriceTable().getTypeCharge())) {
