@@ -34,10 +34,6 @@ public class FinishParkingCommand {
 
         Parking parking = validateParking(optional);
 
-        if (parking.isFinished()) {
-            throw new ValidationsException("Estacionamento j\u00E1 finalizado!");
-        }
-
         parking.setFinished(true);
         parking.setDateTimeEnd(TimeUtils.getTime());
 
@@ -79,7 +75,7 @@ public class FinishParkingCommand {
     }
 
     private void updateAndNotifyUser(Parking parking) {
-        parking = parkingService.update(parking);
+        parkingService.update(parking);
 
         emailService.sendPeriodClose(parking);
     }

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -26,8 +27,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class RedisExpirationListenerCommandTest {
-
-    // TODO CORRIGIR/VALIDAR
 
     @Mock
     private RedisTemplate<Integer, TicketEvent> redisTemplate;
@@ -50,6 +49,8 @@ class RedisExpirationListenerCommandTest {
     @InjectMocks
     private RedisExpirationListenerCommand listener;
 
+    private final LocalDateTime dateTime = LocalDateTime.now();
+
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
@@ -62,9 +63,9 @@ class RedisExpirationListenerCommandTest {
                 .ticketId(1)
                 .typeCharge(TypeCharge.HOUR)
                 .status(status)
-                .expirationTime(LocalDateTime.now().plusMinutes(5))
+                .expirationTime(dateTime)
                 .email("test@example.com")
-                .startDate(LocalDateTime.now())
+                .startDate(dateTime.minusHours(1))
                 .build();
     }
 
@@ -73,9 +74,9 @@ class RedisExpirationListenerCommandTest {
                 .ticketId(1)
                 .typeCharge(TypeCharge.FIXED)
                 .status(status)
-                .expirationTime(LocalDateTime.now().plusMinutes(5))
+                .expirationTime(dateTime)
                 .email("test@example.com")
-                .startDate(LocalDateTime.now())
+                .startDate(dateTime.minusHours(1))
                 .build();
     }
 
@@ -90,7 +91,8 @@ class RedisExpirationListenerCommandTest {
 
         verify(emailService).sendHourlyWarnMessage(event.getEmail());
         verify(valueOperations).set(eq(event.getTicketId()), eq(event), any(Duration.class));
-        verify(event).setStatus(TicketEvent.TicketStatus.UPDATED);
+        assertEquals(TicketEvent.TicketStatus.UPDATED, event.getStatus());
+        assertEquals(dateTime.plusMinutes(10), event.getExpirationTime());
     }
 
     @Test
@@ -104,22 +106,25 @@ class RedisExpirationListenerCommandTest {
 
         verify(emailService).sendHourlyAdditionTime(event.getStartDate(), event.getExpirationTime(), event.getPrice(), event.getEmail());
         verify(valueOperations).set(eq(event.getTicketId()), eq(event), any(Duration.class));
-        verify(event).setStatus(TicketEvent.TicketStatus.TO_BE_UPDATED);
+        assertEquals(TicketEvent.TicketStatus.TO_BE_UPDATED, event.getStatus());
+        assertEquals(dateTime.plusMinutes(50), event.getExpirationTime());
     }
 
     @Test
     void shouldProcessFixedChargeToBeUpdated() throws IOException {
         TicketEvent event = fixedEvent(TicketEvent.TicketStatus.TO_BE_UPDATED);
 
-        event.setStatus(TicketEvent.TicketStatus.TO_BE_UPDATED);
-        when(objectMapper.readValue(any(byte[].class), eq(TicketEvent.class))).thenReturn(event);
+        when(objectMapper.readValue(any(byte[].class), eq(TicketEvent.class)))
+                .thenReturn(event);
         when(message.toString()).thenReturn("testMessage");
+
 
         listener.onMessage(message, new byte[]{});
 
         verify(emailService).sendFixedWarnMessage(event.getEmail());
         verify(valueOperations).set(eq(event.getTicketId()), eq(event), any(Duration.class));
-        verify(event).setStatus(TicketEvent.TicketStatus.UPDATED);
+        assertEquals(TicketEvent.TicketStatus.UPDATED, event.getStatus());
+        assertEquals(dateTime.plusMinutes(5), event.getExpirationTime());
     }
 
     @Test
@@ -132,6 +137,7 @@ class RedisExpirationListenerCommandTest {
         listener.onMessage(message, new byte[]{});
 
         verify(finishParkingCommand).execute(event);
+        assertEquals(dateTime.plusMinutes(5), event.getExpirationTime());
     }
 
     @Test

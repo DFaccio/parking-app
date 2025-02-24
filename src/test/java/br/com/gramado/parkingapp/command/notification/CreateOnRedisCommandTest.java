@@ -22,8 +22,6 @@ import static org.mockito.Mockito.*;
 
 class CreateOnRedisCommandTest {
 
-    // TODO CORRIGIR/VALIDAR
-
     @Mock
     private RedisTemplate<Integer, TicketEvent> redisTemplate;
 

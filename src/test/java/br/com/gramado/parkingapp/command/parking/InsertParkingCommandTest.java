@@ -16,10 +16,7 @@ import br.com.gramado.parkingapp.util.enums.TypePayment;
 import br.com.gramado.parkingapp.util.exception.ValidationsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 
 import java.time.*;
 import java.util.Optional;
@@ -28,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class InsertParkingCommandTest {
-    // TODO CORRIGIR/VALIDAR
+
     @Mock
     private ParkingServiceInterface parkingService;
 
@@ -85,7 +82,8 @@ class InsertParkingCommandTest {
 
     @Test
     void shouldCreateParkingSuccessfully() throws ValidationsException {
-        Mockito.mockStatic(TimeUtils.class);
+        MockedStatic<TimeUtils> mockedStatic = Mockito.mockStatic(TimeUtils.class);
+
         when(TimeUtils.getTime()).thenReturn(LocalDateTime.now(fixedClock));
         when(TimeUtils.addDurationInTime(any(), any()))
                 .thenReturn(LocalDateTime.of(2025, 2, 16, 14, 0, 0, 0));
@@ -111,15 +109,15 @@ class InsertParkingCommandTest {
                 eq(priceTable.getTypeCharge()),
                 eq(LocalDateTime.of(2025, 2, 16, 14, 0, 0, 0))
         );
+
+        mockedStatic.close();
     }
 
     @Test
     void shouldThrowValidationExceptionWhenVehicleNotFound() {
         when(vehicleService.findById(1)).thenReturn(Optional.empty());
 
-        ValidationsException exception = assertThrows(ValidationsException.class, () -> {
-            insertParkingCommand.execute(validParkingCreateDto);
-        });
+        ValidationsException exception = assertThrows(ValidationsException.class, () -> insertParkingCommand.execute(validParkingCreateDto));
 
         assertEquals("Veículo não encontrado!", exception.getMessage());
     }
@@ -129,9 +127,7 @@ class InsertParkingCommandTest {
         when(vehicleService.findById(1)).thenReturn(Optional.of(vehicle));
         when(priceTableService.findById(1)).thenReturn(Optional.empty());
 
-        ValidationsException exception = assertThrows(ValidationsException.class, () -> {
-            insertParkingCommand.execute(validParkingCreateDto);
-        });
+        ValidationsException exception = assertThrows(ValidationsException.class, () -> insertParkingCommand.execute(validParkingCreateDto));
 
         assertEquals("Tabela de preço não encontrada!", exception.getMessage());
     }
@@ -142,9 +138,7 @@ class InsertParkingCommandTest {
         when(vehicleService.findById(1)).thenReturn(Optional.of(vehicle));
         when(priceTableService.findById(1)).thenReturn(Optional.of(priceTable));
 
-        ValidationsException exception = assertThrows(ValidationsException.class, () -> {
-            insertParkingCommand.execute(validParkingCreateDto);
-        });
+        ValidationsException exception = assertThrows(ValidationsException.class, () -> insertParkingCommand.execute(validParkingCreateDto));
 
         assertEquals("A tabela de preço informada está desabilitada!", exception.getMessage());
     }

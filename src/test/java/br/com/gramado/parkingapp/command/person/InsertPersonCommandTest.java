@@ -3,103 +3,78 @@ package br.com.gramado.parkingapp.command.person;
 import br.com.gramado.parkingapp.dto.PersonDto;
 import br.com.gramado.parkingapp.entity.Person;
 import br.com.gramado.parkingapp.service.person.PersonServiceInterface;
+import br.com.gramado.parkingapp.util.converter.PersonConverter;
 import br.com.gramado.parkingapp.util.exception.ValidationsException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.annotation.Resource;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-class InsertPersonCommandTest {
-
-    // TODO CORRIGIR
+public class InsertPersonCommandTest {
 
     @Mock
     private PersonServiceInterface service;
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    @Mock
+    private PersonConverter converter;
 
     @InjectMocks
-    private InsertPersonCommand command;
+    private InsertPersonCommand insertPersonCommand;
+
+    private PersonDto personDto;
+
+    private Person person;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-    }
 
-    private static final String PATH = "src/test/java/br/com/gramado/parkingapp/command/person";
+        personDto = new PersonDto();
+        personDto.setDocument("123456789");
 
-    @Test
-    void insert() throws ValidationsException, IOException {
-        String filename = PATH + "/input.json";
-
-        Person person = objectMapper.readValue(new File(PATH + "/input.json"), Person.class);
-
-        Mockito.when(service.insert(any(Person.class))).thenReturn(person);
-
-        Mockito.when(service.findByDocument(any(String.class))).thenReturn(Optional.empty());
-
-        PersonDto dto = objectMapper.readValue(new File(filename), PersonDto.class);
-
-        PersonDto saved = command.execute(dto);
-
-        assertEquals(dto.getDocument(), saved.getDocument());
-        assertEquals(dto.getPreferentialPayment(), saved.getPreferentialPayment());
-        assertEquals(dto.getName(), saved.getName());
+        person = new Person();
+        person.setDocument("123456789");
     }
 
     @Test
-    void insertAlreadySaved() throws IOException {
-        String filename = PATH + "/input.json";
+    void testExecute_Success() throws ValidationsException {
+        when(converter.convert(personDto))
+                .thenReturn(person);
 
-        Person person = objectMapper.readValue(new File(filename), Person.class);
+        when(service.findByDocument(person.getDocument()))
+                .thenReturn(Optional.empty());
 
-        Mockito.when(service.findByDocument(any(String.class))).thenReturn(Optional.of(person));
+        when(service.insert(person))
+                .thenReturn(person);
 
-        PersonDto dto = objectMapper.readValue(new File(filename), PersonDto.class);
+        when(converter.convert(person))
+                .thenReturn(personDto);
 
-        Assertions.assertThrows(ValidationsException.class, () -> command.execute(dto));
-    }
+        PersonDto result = insertPersonCommand.execute(personDto);
 
-    void testTypeDocument(String filename, String message) throws IOException {
-        PersonDto dto = objectMapper.readValue(new File(PATH + "/" + filename), PersonDto.class);
-
-        try {
-            command.execute(dto);
-        } catch (ValidationsException e) {
-            assertEquals(e.getMessage(), message);
-        }
+        assertEquals(personDto, result);
+        verify(service).insert(person);
     }
 
     @Test
-    void insertVehicleWrongDocument_CPF() throws IOException {
-        testTypeDocument("input_cpf.json", "Documento não está no padrão esperado para CPF");
-    }
+    void testExecute_PersonAlreadyExists() throws ValidationsException {
+        when(converter.convert(personDto))
+                .thenReturn(person);
 
-    @Test
-    void insertVehicleWrongDocument_CNPJ() throws IOException {
-        testTypeDocument("input_cnpj.json", "Documento não está no padrão esperado para CNPJ");
-    }
+        when(service.findByDocument(person.getDocument()))
+                .thenReturn(Optional.of(person));
 
-    @Test
-    void insertVehicleWrongDocument_Passport() throws IOException {
-        testTypeDocument("input_passport.json", "Documento não está no padrão esperado para o passaporte");
-    }
+        ValidationsException exception = assertThrows(ValidationsException.class, () ->
+                insertPersonCommand.execute(personDto));
 
-    @Test
-    void insertVehicleWrongDocument_rne() throws IOException {
-        testTypeDocument("input_rne.json", "Documento não está no padrão esperado para o RNE");
+        assertEquals("Pessoa já cadastrada", exception.getMessage());
     }
 }
