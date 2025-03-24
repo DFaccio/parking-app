@@ -9,26 +9,36 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
-@Builder
 public class TicketEvent {
 
-    private Integer ticketId;
+    private final Integer ticketId;
 
     @Setter
     private LocalDateTime expirationTime;
 
-    private LocalDateTime startDate;
+    private final LocalDateTime startDate;
 
-    private TypeCharge typeCharge;
+    private final TypeCharge typeCharge;
 
     @Setter
     private TicketStatus status;
 
-    private String email;
+    private final String email;
 
     private BigDecimal price;
 
     public enum TicketStatus {
         CREATED, TO_BE_UPDATED, UPDATED
+    }
+
+    @Builder
+    public TicketEvent(Integer ticketId, LocalDateTime expirationTime, LocalDateTime startDate, TypeCharge typeCharge, TicketStatus status, String email, BigDecimal price) {
+        this.ticketId = ticketId;
+        this.expirationTime = expirationTime;
+        this.startDate = startDate;
+        this.typeCharge = typeCharge;
+        this.status = status;
+        this.email = email;
+        this.price = price;
     }
 }

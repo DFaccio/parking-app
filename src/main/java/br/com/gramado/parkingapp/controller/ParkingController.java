@@ -7,6 +7,7 @@ import br.com.gramado.parkingapp.util.exception.NotFoundException;
 import br.com.gramado.parkingapp.util.exception.ValidationsException;
 import br.com.gramado.parkingapp.util.pagination.PagedResponse;
 import br.com.gramado.parkingapp.util.pagination.Pagination;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,7 +35,7 @@ public class ParkingController {
 
     @Operation(summary = "Cadastrar estacionamento")
     @PostMapping
-    public ResponseEntity<ParkingDto> insert(@Valid @RequestBody ParkingCreateDto parkingDto) throws ValidationsException {
+    public ResponseEntity<ParkingDto> insert(@Valid @RequestBody ParkingCreateDto parkingDto) throws ValidationsException, JsonProcessingException {
         ParkingDto parking = insertParkingCommand.execute(parkingDto);
 
         return ResponseEntity.ok(parking);

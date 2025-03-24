@@ -4,10 +4,10 @@ import br.com.gramado.parkingapp.dto.TicketEvent;
 import br.com.gramado.parkingapp.entity.Parking;
 import br.com.gramado.parkingapp.service.email.EmailServiceInterface;
 import br.com.gramado.parkingapp.service.parking.ParkingServiceInterface;
+import br.com.gramado.parkingapp.service.tickets.TicketEventServiceInterface;
 import br.com.gramado.parkingapp.util.TimeUtils;
 import br.com.gramado.parkingapp.util.enums.TypeCharge;
 import br.com.gramado.parkingapp.util.exception.ValidationsException;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -17,16 +17,18 @@ import java.util.Optional;
 @Component
 public class FinishParkingCommand {
 
+    // todo atualizar encerramento manual
+
     private final EmailServiceInterface emailService;
 
     private final ParkingServiceInterface parkingService;
 
-    private final RedisTemplate<Integer, TicketEvent> redisTemplate;
+    private final TicketEventServiceInterface service;
 
-    public FinishParkingCommand(EmailServiceInterface emailService, ParkingServiceInterface parkingService, RedisTemplate<Integer, TicketEvent> redisTemplate) {
+    public FinishParkingCommand(EmailServiceInterface emailService, ParkingServiceInterface parkingService, TicketEventServiceInterface service) {
         this.emailService = emailService;
         this.parkingService = parkingService;
-        this.redisTemplate = redisTemplate;
+        this.service = service;
     }
 
     public void execute(Integer parkingId) throws ValidationsException {
@@ -48,11 +50,7 @@ public class FinishParkingCommand {
 
         updateAndNotifyUser(parking);
 
-        removeParkingFromRedis(parkingId);
-    }
-
-    private void removeParkingFromRedis(Integer parkingId) {
-        redisTemplate.delete(parkingId);
+        //removeParkingFromRedis(parkingId);
     }
 
     /**

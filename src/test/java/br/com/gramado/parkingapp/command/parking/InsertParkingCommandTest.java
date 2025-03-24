@@ -1,6 +1,6 @@
 package br.com.gramado.parkingapp.command.parking;
 
-import br.com.gramado.parkingapp.command.notification.CreateOnRedisCommand;
+import br.com.gramado.parkingapp.command.notification.InitializeTicketEventCommand;
 import br.com.gramado.parkingapp.command.payment.InsertPaymentCommand;
 import br.com.gramado.parkingapp.dto.parking.ParkingCreateDto;
 import br.com.gramado.parkingapp.dto.parking.ParkingDto;
@@ -14,6 +14,7 @@ import br.com.gramado.parkingapp.util.converter.ParkingConverter;
 import br.com.gramado.parkingapp.util.enums.TypeCharge;
 import br.com.gramado.parkingapp.util.enums.TypePayment;
 import br.com.gramado.parkingapp.util.exception.ValidationsException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -39,7 +40,7 @@ class InsertParkingCommandTest {
     private PriceTableServiceInterface priceTableService;
 
     @Mock
-    private CreateOnRedisCommand createNotificationCommand;
+    private InitializeTicketEventCommand createNotificationCommand;
 
     @Mock
     private InsertPaymentCommand insertPaymentCommand;
@@ -81,7 +82,7 @@ class InsertParkingCommandTest {
     }
 
     @Test
-    void shouldCreateParkingSuccessfully() throws ValidationsException {
+    void shouldCreateParkingSuccessfully() throws ValidationsException, JsonProcessingException {
         MockedStatic<TimeUtils> mockedStatic = Mockito.mockStatic(TimeUtils.class);
 
         when(TimeUtils.getTime()).thenReturn(LocalDateTime.now(fixedClock));
@@ -103,7 +104,7 @@ class InsertParkingCommandTest {
 
         assertNotNull(result);
         verify(parkingService).insert(any(Parking.class));
-        verify(createNotificationCommand).createRedisExpirationEvent(any(Parking.class));
+        verify(createNotificationCommand).createExpirationEvent(any(Parking.class));
         verify(emailServiceInterface).sendEmailParkingStarted(
                 eq(person.getEmail()),
                 eq(priceTable.getTypeCharge()),

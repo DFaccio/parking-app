@@ -2,23 +2,21 @@ package br.com.gramado.parkingapp.command.notification;
 
 import br.com.gramado.parkingapp.dto.TicketEvent;
 import br.com.gramado.parkingapp.entity.Parking;
+import br.com.gramado.parkingapp.service.tickets.TicketEventServiceInterface;
 import br.com.gramado.parkingapp.util.enums.TypeCharge;
-import org.springframework.data.redis.core.RedisTemplate;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Component
-public class CreateOnRedisCommand {
+@RequiredArgsConstructor
+public class InitializeTicketEventCommand {
 
-    private final RedisTemplate<Integer, TicketEvent> redisTemplate;
+    private final TicketEventServiceInterface service;
 
-    public CreateOnRedisCommand(RedisTemplate<Integer, TicketEvent> redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
-
-    public void createRedisExpirationEvent(Parking parking) {
+    public void createExpirationEvent(Parking parking) throws JsonProcessingException {
         LocalDateTime expirationTime;
 
         if (TypeCharge.FIXED.equals(parking.getPriceTable().getTypeCharge())) {
@@ -37,8 +35,6 @@ public class CreateOnRedisCommand {
                 .startDate(parking.getDateTimeStart())
                 .build();
 
-        Duration ttl = Duration.between(LocalDateTime.now(), event.getExpirationTime());
-
-        redisTemplate.opsForValue().set(event.getTicketId(), event, ttl);
+        service.create(event);
     }
 }

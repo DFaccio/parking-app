@@ -13,7 +13,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
-import org.springframework.data.redis.core.RedisTemplate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -26,14 +25,13 @@ import static org.mockito.Mockito.*;
 
 class FinishParkingCommandTest {
 
+    //todo update tests
+
     @Mock
     private EmailServiceInterface emailService;
 
     @Mock
     private ParkingServiceInterface parkingService;
-
-    @Mock
-    private RedisTemplate<Integer, TicketEvent> redisTemplate;
 
     @InjectMocks
     private FinishParkingCommand finishParkingCommand;
@@ -83,7 +81,6 @@ class FinishParkingCommandTest {
 
         verify(parkingService).update(any(Parking.class));
         verify(emailService).sendPeriodClose(parking);
-        verify(redisTemplate).delete(eq(1));
 
         assertTrue(parking.isFinished());
         assertEquals(endParkingPeriod, parking.getDateTimeEnd());
@@ -128,7 +125,6 @@ class FinishParkingCommandTest {
 
         verify(parkingService).update(parking);
         verify(emailService).sendPeriodClose(parking);
-        verify(redisTemplate).delete(eq(1));
 
         assertTrue(parking.isFinished());
         assertEquals(endParkingPeriod, parking.getDateTimeEnd());

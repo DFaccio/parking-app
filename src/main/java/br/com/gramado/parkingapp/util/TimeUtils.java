@@ -34,4 +34,8 @@ public interface TimeUtils {
 
         return LocalTime.parse(duration, DateTimeFormatter.ISO_LOCAL_TIME);
     }
+
+    static long durationBetweenDate(LocalDateTime start, LocalDateTime end) {
+        return Duration.between(start, end).toSeconds();
+    }
 }

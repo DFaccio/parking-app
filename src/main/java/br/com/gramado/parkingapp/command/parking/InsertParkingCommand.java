@@ -1,6 +1,6 @@
 package br.com.gramado.parkingapp.command.parking;
 
-import br.com.gramado.parkingapp.command.notification.CreateOnRedisCommand;
+import br.com.gramado.parkingapp.command.notification.InitializeTicketEventCommand;
 import br.com.gramado.parkingapp.command.payment.InsertPaymentCommand;
 import br.com.gramado.parkingapp.dto.parking.ParkingCreateDto;
 import br.com.gramado.parkingapp.dto.parking.ParkingDto;
@@ -17,8 +17,10 @@ import br.com.gramado.parkingapp.util.converter.ParkingConverter;
 import br.com.gramado.parkingapp.util.enums.TypeCharge;
 import br.com.gramado.parkingapp.util.enums.TypePayment;
 import br.com.gramado.parkingapp.util.exception.ValidationsException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class InsertParkingCommand {
@@ -36,14 +38,14 @@ public class InsertParkingCommand {
 
     private final PriceTableServiceInterface priceTableService;
 
-    private final CreateOnRedisCommand createNotificationCommand;
+    private final InitializeTicketEventCommand createNotificationCommand;
 
     private final InsertPaymentCommand insertPaymentCommand;
 
     private final EmailServiceInterface emailServiceInterface;
 
     @Autowired
-    public InsertParkingCommand(ParkingServiceInterface parkingService, ParkingConverter parkingConverter, VehicleServiceInterface vehicleService, PriceTableServiceInterface priceTableService, CreateOnRedisCommand createNotificationCommand, InsertPaymentCommand insertPaymentCommand, EmailServiceInterface emailServiceInterface) {
+    public InsertParkingCommand(ParkingServiceInterface parkingService, ParkingConverter parkingConverter, VehicleServiceInterface vehicleService, PriceTableServiceInterface priceTableService, InitializeTicketEventCommand createNotificationCommand, InsertPaymentCommand insertPaymentCommand, EmailServiceInterface emailServiceInterface) {
         this.parkingService = parkingService;
         this.parkingConverter = parkingConverter;
         this.vehicleService = vehicleService;
@@ -53,7 +55,8 @@ public class InsertParkingCommand {
         this.emailServiceInterface = emailServiceInterface;
     }
 
-    public ParkingDto execute(ParkingCreateDto parkingDto) throws ValidationsException {
+    @Transactional
+    public ParkingDto execute(ParkingCreateDto parkingDto) throws ValidationsException, JsonProcessingException {
         Vehicle vehicle = verifyAndGetVehicle(parkingDto.getVehicleId());
         PriceTable priceTable = verifyAndGetPriceTable(parkingDto.getPriceTableId());
 
@@ -71,7 +74,7 @@ public class InsertParkingCommand {
 
         parking = parkingService.insert(parking);
 
-        createNotificationCommand.createRedisExpirationEvent(parking);
+        createNotificationCommand.createExpirationEvent(parking);
 
         emailServiceInterface.sendEmailParkingStarted(parking.getVehicle().getPerson().getEmail(),
                 parking.getPriceTable().getTypeCharge(), parking.getDateTimeEnd());
