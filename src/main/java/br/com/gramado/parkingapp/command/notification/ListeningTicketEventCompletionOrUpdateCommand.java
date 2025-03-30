@@ -1,17 +1,22 @@
 package br.com.gramado.parkingapp.command.notification;
 
-import br.com.gramado.parkingapp.command.parking.FinishParkingCommand;
 import br.com.gramado.parkingapp.dto.TicketEvent;
+import br.com.gramado.parkingapp.entity.Parking;
 import br.com.gramado.parkingapp.service.email.EmailServiceInterface;
+import br.com.gramado.parkingapp.service.parking.ParkingServiceInterface;
 import br.com.gramado.parkingapp.service.tickets.TicketEventServiceInterface;
 import br.com.gramado.parkingapp.util.enums.TypeCharge;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -22,16 +27,30 @@ public class ListeningTicketEventCompletionOrUpdateCommand {
 
     private final EmailServiceInterface emailService;
 
-    private final FinishParkingCommand finishParkingCommand;
+    private final ParkingServiceInterface parkingService;
+
+    private final ObjectMapper objectMapper;
 
     @RabbitListener(queues = "${queue.time.to.notify}")
-    public void onMessage(TicketEvent event) throws JsonProcessingException {
-        log.info("Ticket expired: " + event.getTicketId());
+    public void onMessage(Message message) throws IOException {
+        TicketEvent event = objectMapper.readValue(message.getBody(), TicketEvent.class);
 
-        if (TypeCharge.HOUR.equals(event.getTypeCharge())) {
-            processHourlyCharge(event);
+        Integer tickedId = event.getTicketId();
+
+        log.info("Ticket expired: " + tickedId);
+
+        Optional<Parking> parkingOptional = parkingService.findById(tickedId);
+
+        if (parkingOptional.isEmpty()) {
+            log.info("Ticket " + tickedId + " not found.");
+        } else if (parkingOptional.get().isFinished()) {
+            log.info("Ticket " + tickedId + " already finished.");
         } else {
-            processFixedCharge(event);
+            if (TypeCharge.HOUR.equals(event.getTypeCharge())) {
+                processHourlyCharge(event);
+            } else {
+                processFixedCharge(event, parkingOptional.get());
+            }
         }
     }
 
@@ -45,13 +64,16 @@ public class ListeningTicketEventCompletionOrUpdateCommand {
         }
     }
 
-    private void processFixedCharge(TicketEvent event) throws JsonProcessingException {
+    private void processFixedCharge(TicketEvent event, Parking parking) throws JsonProcessingException {
         if (event.getStatus() == TicketEvent.TicketStatus.TO_BE_UPDATED) {
             updateEvent(event, 5, TicketEvent.TicketStatus.UPDATED);
             emailService.sendFixedWarnMessage(event.getEmail());
         } else if (event.getStatus() == TicketEvent.TicketStatus.UPDATED) {
-            event.setExpirationTime(event.getExpirationTime().plusMinutes(5));
-            finishParkingCommand.execute(event);
+            parking.setFinished(true);
+
+            parkingService.update(parking);
+
+            emailService.sendPeriodClose(parking);
         }
     }
 

@@ -36,6 +36,6 @@ public interface TimeUtils {
     }
 
     static long durationBetweenDate(LocalDateTime start, LocalDateTime end) {
-        return Duration.between(start, end).toSeconds();
+        return Duration.between(start, end).toMillis();
     }
 }

@@ -1,44 +1,36 @@
 package br.com.gramado.parkingapp.dto;
 
 import br.com.gramado.parkingapp.util.enums.TypeCharge;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class TicketEvent {
 
-    private final Integer ticketId;
+    private Integer ticketId;
 
     @Setter
     private LocalDateTime expirationTime;
 
-    private final LocalDateTime startDate;
+    private LocalDateTime startDate;
 
-    private final TypeCharge typeCharge;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private TypeCharge typeCharge;
 
     @Setter
     private TicketStatus status;
 
-    private final String email;
+    private String email;
 
     private BigDecimal price;
 
     public enum TicketStatus {
         CREATED, TO_BE_UPDATED, UPDATED
-    }
-
-    @Builder
-    public TicketEvent(Integer ticketId, LocalDateTime expirationTime, LocalDateTime startDate, TypeCharge typeCharge, TicketStatus status, String email, BigDecimal price) {
-        this.ticketId = ticketId;
-        this.expirationTime = expirationTime;
-        this.startDate = startDate;
-        this.typeCharge = typeCharge;
-        this.status = status;
-        this.email = email;
-        this.price = price;
     }
 }

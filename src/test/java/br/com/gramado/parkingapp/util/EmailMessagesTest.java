@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class EmailMessagesTest {
+class EmailMessagesTest {
 
     @Test
     void testCreateTerminationMessageHourly() {

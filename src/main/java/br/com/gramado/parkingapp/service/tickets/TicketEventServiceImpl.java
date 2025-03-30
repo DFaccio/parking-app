@@ -31,11 +31,12 @@ class TicketEventServiceImpl implements TicketEventServiceInterface {
         sendEvent(event.getStartDate(), event);
     }
 
-    private void sendEvent(LocalDateTime event, TicketEvent event1) throws JsonProcessingException {
-        long ttl = durationBetweenDate(event, event1.getExpirationTime());
+    private void sendEvent(LocalDateTime eventDate, TicketEvent event) throws JsonProcessingException {
+        long ttl = durationBetweenDate(eventDate, event.getExpirationTime());
 
         MessageProperties properties = new MessageProperties();
         properties.setExpiration(String.valueOf(ttl));
+        properties.setContentType("application/json");
 
         String bodyAsString = objectMapper.writeValueAsString(event);
 

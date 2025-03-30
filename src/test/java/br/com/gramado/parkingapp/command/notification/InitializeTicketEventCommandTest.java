@@ -5,70 +5,67 @@ import br.com.gramado.parkingapp.entity.Parking;
 import br.com.gramado.parkingapp.entity.Person;
 import br.com.gramado.parkingapp.entity.PriceTable;
 import br.com.gramado.parkingapp.entity.Vehicle;
+import br.com.gramado.parkingapp.service.tickets.TicketEventServiceInterface;
 import br.com.gramado.parkingapp.util.enums.TypeCharge;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.math.BigDecimal;
-import java.time.Duration;
 import java.time.LocalDateTime;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 
 class InitializeTicketEventCommandTest {
 
-    //todo update tests
+    @Mock
+    private TicketEventServiceInterface service;
 
     @InjectMocks
     private InitializeTicketEventCommand initializeTicketEventCommand;
 
+    private Parking parking;
+
+    private PriceTable priceTable;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-    }
 
-    @Test
-    void shouldCreateNotificationAndStoreInRedis() throws JsonProcessingException {
-        Parking parking = createMockParking();
-        TicketEvent expectedEvent = TicketEvent.builder()
-                .ticketId(parking.getId())
-                .typeCharge(parking.getPriceTable().getTypeCharge())
-                .expirationTime(parking.getDateTimeStart().plusMinutes(50))
-                .status(TicketEvent.TicketStatus.CREATED)
-                .email(parking.getVehicle().getPerson().getEmail())
-                .price(parking.getPriceTable().getValue())
-                .startDate(parking.getDateTimeStart())
-                .build();
-
-        /*when(redisTemplate.opsForValue()).thenReturn(valueOperations);
-
-        initializeTicketEventCommand.createExpirationEvent(parking);
-
-        verify(redisTemplate.opsForValue())
-                .set(eq(expectedEvent.getTicketId()), any(TicketEvent.class), any(Duration.class));*/
-    }
-
-    private Parking createMockParking() {
         Person person = new Person();
         person.setEmail("test@example.com");
 
         Vehicle vehicle = new Vehicle();
         vehicle.setPerson(person);
 
-        PriceTable priceTable = new PriceTable();
-        priceTable.setTypeCharge(TypeCharge.HOUR);
-        priceTable.setValue(BigDecimal.valueOf(100.0));
+        priceTable = new PriceTable();
+        priceTable.setTypeCharge(TypeCharge.FIXED);
+        priceTable.setValue(BigDecimal.TEN);
 
-        Parking parking = new Parking();
+        parking = new Parking();
         parking.setId(1);
-        parking.setVehicle(vehicle);
-        parking.setPriceTable(priceTable);
-        parking.setDateTimeStart(LocalDateTime.now());
+        parking.setDateTimeStart(LocalDateTime.now().minusHours(1));
         parking.setDateTimeEnd(LocalDateTime.now().plusHours(1));
+        parking.setPriceTable(priceTable);
+        parking.setVehicle(vehicle);
+    }
 
-        return parking;
+    @Test
+    void testCreateExpirationEvent_FixedCharge() throws Exception {
+        initializeTicketEventCommand.createExpirationEvent(parking);
+
+        verify(service).create(any(TicketEvent.class));
+    }
+
+    @Test
+    void testCreateExpirationEvent_HourlyCharge() throws Exception {
+        priceTable.setTypeCharge(TypeCharge.HOUR);
+
+        initializeTicketEventCommand.createExpirationEvent(parking);
+
+        verify(service).create(any(TicketEvent.class));
     }
 }

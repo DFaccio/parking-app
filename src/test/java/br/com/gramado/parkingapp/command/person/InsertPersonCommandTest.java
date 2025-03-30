@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class InsertPersonCommandTest {
+class InsertPersonCommandTest {
 
     @Mock
     private PersonServiceInterface service;

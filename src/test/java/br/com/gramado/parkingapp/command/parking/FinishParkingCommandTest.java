@@ -1,6 +1,5 @@
 package br.com.gramado.parkingapp.command.parking;
 
-import br.com.gramado.parkingapp.dto.TicketEvent;
 import br.com.gramado.parkingapp.entity.Parking;
 import br.com.gramado.parkingapp.entity.Payment;
 import br.com.gramado.parkingapp.entity.PriceTable;
@@ -24,8 +23,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class FinishParkingCommandTest {
-
-    //todo update tests
 
     @Mock
     private EmailServiceInterface emailService;
@@ -129,60 +126,5 @@ class FinishParkingCommandTest {
         assertTrue(parking.isFinished());
         assertEquals(endParkingPeriod, parking.getDateTimeEnd());
         assertEquals(parking.getPriceTable().getValue(), parking.getPayment().getPrice());
-    }
-
-    @Test
-    void testExecuteWithTicketEvent() {
-        parking.getPriceTable().setTypeCharge(TypeCharge.FIXED);
-
-        TicketEvent event = TicketEvent.builder()
-                .ticketId(1)
-                .typeCharge(TypeCharge.FIXED)
-                .expirationTime(fixedLocalDateTime.plusMinutes(50))
-                .status(TicketEvent.TicketStatus.CREATED)
-                .email("test@example.com")
-                .price(parking.getPriceTable().getValue())
-                .startDate(fixedLocalDateTime)
-                .build();
-
-        when(parkingService.findById(eq(1)))
-                .thenReturn(Optional.of(parking));
-
-        finishParkingCommand.execute(event);
-
-        verify(parkingService).update(parking);
-        verify(emailService).sendPeriodClose(parking);
-        assertTrue(parking.isFinished());
-    }
-
-    @Test
-    void testExecuteWithNonExistingTicketEvent() {
-        TicketEvent event = TicketEvent.builder()
-                .ticketId(99)
-                .build();
-
-        when(parkingService.findById(eq(99)))
-                .thenReturn(Optional.empty());
-
-        finishParkingCommand.execute(event);
-
-        verify(parkingService, never()).update(any(Parking.class));
-        verify(emailService, never()).sendPeriodClose(any(Parking.class));
-    }
-
-    @Test
-    void testExecuteWithFinishedParking() {
-        TicketEvent event = TicketEvent.builder()
-                .ticketId(1)
-                .build();
-
-        parking.setFinished(true);
-
-        when(parkingService.findById(eq(1))).thenReturn(Optional.of(parking));
-
-        finishParkingCommand.execute(event);
-
-        verify(parkingService, never()).update(any(Parking.class));
-        verify(emailService, never()).sendPeriodClose(any(Parking.class));
     }
 }
