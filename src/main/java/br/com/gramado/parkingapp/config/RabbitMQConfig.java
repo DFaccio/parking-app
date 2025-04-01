@@ -17,8 +17,8 @@ public class RabbitMQConfig {
     private final CachingConnectionFactory cachingConnectionFactory;
 
     @Bean
-    public Jackson2JsonMessageConverter jacksonConverter() {
-        return new Jackson2JsonMessageConverter();
+    public Jackson2JsonMessageConverter jacksonConverter(ObjectMapper objectMapper) {
+        return new Jackson2JsonMessageConverter(objectMapper);
     }
 
     @Bean

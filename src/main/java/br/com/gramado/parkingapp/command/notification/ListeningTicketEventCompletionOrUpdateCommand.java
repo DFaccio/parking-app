@@ -5,18 +5,12 @@ import br.com.gramado.parkingapp.entity.Parking;
 import br.com.gramado.parkingapp.service.email.EmailServiceInterface;
 import br.com.gramado.parkingapp.service.parking.ParkingServiceInterface;
 import br.com.gramado.parkingapp.service.tickets.TicketEventServiceInterface;
-import br.com.gramado.parkingapp.util.enums.TypeCharge;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -29,60 +23,61 @@ public class ListeningTicketEventCompletionOrUpdateCommand {
 
     private final ParkingServiceInterface parkingService;
 
-    private final ObjectMapper objectMapper;
-
     @RabbitListener(queues = "${queue.time.to.notify}")
-    public void onMessage(Message message) throws IOException {
-        TicketEvent event = objectMapper.readValue(message.getBody(), TicketEvent.class);
+    public void onMessage(TicketEvent event) {
+        Integer ticketId = event.getTicketId();
+        log.info("Ticket expired: {}", ticketId);
 
-        Integer tickedId = event.getTicketId();
+        parkingService.findById(ticketId).ifPresentOrElse(
+                parking -> {
+                    try {
+                        handleParkingEvent(event, parking);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                },
+                () -> log.info("Ticket {} not found.", ticketId)
+        );
+    }
 
-        log.info("Ticket expired: " + tickedId);
+    private void handleParkingEvent(TicketEvent event, Parking parking) throws IOException {
+        if (parking.isFinished()) {
+            log.info("Ticket {} already finished.", event.getTicketId());
+            return;
+        }
 
-        Optional<Parking> parkingOptional = parkingService.findById(tickedId);
-
-        if (parkingOptional.isEmpty()) {
-            log.info("Ticket " + tickedId + " not found.");
-        } else if (parkingOptional.get().isFinished()) {
-            log.info("Ticket " + tickedId + " already finished.");
+        if (event.isStatusWarnUser()) {
+            updateEvent(event, event.isHourlyEvent() ? 10 : 5, TicketEvent.TicketStatus.UPDATED);
+            sendEmailWarn(event);
+        } else if (event.isHourlyEvent()) {
+            processHourlyCharge(event);
         } else {
-            if (TypeCharge.HOUR.equals(event.getTypeCharge())) {
-                processHourlyCharge(event);
-            } else {
-                processFixedCharge(event, parkingOptional.get());
-            }
+            endFixedParkingPeriod(parking);
         }
     }
 
-    private void processHourlyCharge(TicketEvent event) throws JsonProcessingException {
-        if (event.getStatus() == TicketEvent.TicketStatus.TO_BE_UPDATED) {
-            updateEvent(event, 10, TicketEvent.TicketStatus.UPDATED);
-            emailService.sendHourlyWarnMessage(event.getEmail());
-        } else if (event.getStatus() == TicketEvent.TicketStatus.UPDATED) {
-            updateEvent(event, 50, TicketEvent.TicketStatus.TO_BE_UPDATED);
-            emailService.sendHourlyAdditionTime(event.getStartDate(), event.getExpirationTime(), event.getPrice(), event.getEmail());
-        }
-    }
-
-    private void processFixedCharge(TicketEvent event, Parking parking) throws JsonProcessingException {
-        if (event.getStatus() == TicketEvent.TicketStatus.TO_BE_UPDATED) {
-            updateEvent(event, 5, TicketEvent.TicketStatus.UPDATED);
+    private void sendEmailWarn(TicketEvent event) {
+        if (event.isFixedEvent()) {
             emailService.sendFixedWarnMessage(event.getEmail());
-        } else if (event.getStatus() == TicketEvent.TicketStatus.UPDATED) {
-            parking.setFinished(true);
-
-            parkingService.update(parking);
-
-            emailService.sendPeriodClose(parking);
+        } else {
+            emailService.sendHourlyWarnMessage(event.getEmail());
         }
     }
 
-    private void updateEvent(TicketEvent event, long minutesToAdd, TicketEvent.TicketStatus newStatus) throws JsonProcessingException {
-        LocalDateTime newerExpiration = event.getExpirationTime().plusMinutes(minutesToAdd);
+    private void processHourlyCharge(TicketEvent event) throws IOException {
+        updateEvent(event, 50, TicketEvent.TicketStatus.TO_BE_UPDATED);
+        emailService.sendHourlyAdditionTime(event.getStartDate(), event.getExpirationTime(), event.getPrice(), event.getEmail());
+    }
 
-        event.setExpirationTime(newerExpiration);
+    private void endFixedParkingPeriod(Parking parking) {
+        parking.setFinished(true);
+        parkingService.update(parking);
+        emailService.sendPeriodClose(parking);
+    }
+
+    private void updateEvent(TicketEvent event, long minutesToAdd, TicketEvent.TicketStatus newStatus) throws IOException {
+        event.setExpirationTime(event.getExpirationTime().plusMinutes(minutesToAdd));
         event.setStatus(newStatus);
-
         service.update(event);
     }
 }

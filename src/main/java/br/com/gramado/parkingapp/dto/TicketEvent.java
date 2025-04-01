@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
@@ -32,5 +33,18 @@ public class TicketEvent {
 
     public enum TicketStatus {
         CREATED, TO_BE_UPDATED, UPDATED
+    }
+
+    public boolean isStatusWarnUser() {
+        return List.of(TicketEvent.TicketStatus.CREATED, TicketEvent.TicketStatus.TO_BE_UPDATED)
+                .contains(this.status);
+    }
+
+    public boolean isFixedEvent() {
+        return TypeCharge.FIXED.equals(this.typeCharge);
+    }
+
+    public boolean isHourlyEvent() {
+        return TypeCharge.HOUR.equals(this.typeCharge);
     }
 }

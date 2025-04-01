@@ -1,12 +1,5 @@
 package br.com.gramado.parkingapp.command.notification;
 
-import static org.mockito.Mockito.*;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.Optional;
-
-import br.com.gramado.parkingapp.command.parking.FinishParkingCommand;
 import br.com.gramado.parkingapp.dto.TicketEvent;
 import br.com.gramado.parkingapp.entity.Parking;
 import br.com.gramado.parkingapp.entity.Payment;
@@ -22,10 +15,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import static org.mockito.Mockito.*;
+
 
 class ListeningTicketEventCompletionOrUpdateCommandTest {
 
-    /*@Mock
+    @Mock
     private TicketEventServiceInterface service;
 
     @Mock
@@ -53,7 +52,7 @@ class ListeningTicketEventCompletionOrUpdateCommandTest {
         parking.setPayment(new Payment());
     }
 
-    private TicketEvent createTicketEvent(TicketEvent.TicketStatus status, TypeCharge charge){
+    private TicketEvent createTicketEvent(TicketEvent.TicketStatus status, TypeCharge charge) {
         return TicketEvent.builder()
                 .ticketId(1)
                 .typeCharge(charge)
@@ -117,7 +116,7 @@ class ListeningTicketEventCompletionOrUpdateCommandTest {
     }
 
     @Test
-    void testProcessFixedChargeUpdated() throws JsonProcessingException {
+    void testProcessFixedChargeUpdated() {
         TicketEvent ticketEvent = createTicketEvent(TicketEvent.TicketStatus.UPDATED, TypeCharge.FIXED);
 
         when(parkingService.findById(1)).thenReturn(Optional.of(parking));
@@ -126,5 +125,5 @@ class ListeningTicketEventCompletionOrUpdateCommandTest {
 
         verify(parkingService).update(parking);
         verify(emailService).sendPeriodClose(parking);
-    }*/
+    }
 }
