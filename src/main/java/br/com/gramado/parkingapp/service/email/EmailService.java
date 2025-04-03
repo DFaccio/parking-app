@@ -16,10 +16,10 @@ class EmailService implements EmailServiceInterface {
     @Resource
     private JavaMailSender javaMailSender;
 
-    private static final String parkingApp = "Parking App - ";
+    private static final String TITLE = "Parking App - ";
 
     public void sendEmail(String email, String subject, String message) {
-        String title = parkingApp + subject;
+        String title = TITLE + subject;
 
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(email);
@@ -29,9 +29,9 @@ class EmailService implements EmailServiceInterface {
         try {
             javaMailSender.send(mailMessage);
 
-            LOGGER.info(title + ": e-mail enviado para " + email);
+            LOGGER.info("{}: e-mail enviado para {}", title, email);
         } catch (MailException exception) {
-            LOGGER.error("Error on send e-mail to " + email, exception);
+            LOGGER.error("Error on send e-mail to {}" + email, exception);
         }
     }
 }

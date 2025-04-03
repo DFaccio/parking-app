@@ -8,12 +8,13 @@ services:
       - postgres-data:/var/lib/postgresql/data
     restart: unless-stopped
     environment:
-      POSTGRES_PASSWORD: "root"
-      POSTGRES_DB: "parquimetro_db"
+      POSTGRES_PASSWORD: ${DATASOURCE_PASSWORD}
+      POSTGRES_DB: parquimetro
     ports:
-      - "15432:5432"
+      - "7072:5432"
     networks:
       - parking-app-network
+
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
@@ -21,29 +22,46 @@ services:
       - ./servers.json:/pgadmin4/servers.json
     restart: unless-stopped
     environment:
-      PGADMIN_DEFAULT_EMAIL: "pgadmin@gmail.com"
-      PGADMIN_DEFAULT_PASSWORD: "postgres"
+      PGADMIN_DEFAULT_EMAIL: pgadmin@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin
     ports:
-      - "16543:80"
+      - "7070:80"
     depends_on:
       - postgres
     networks:
       - parking-app-network
+
   parking-app:
     build:
       context: .
     container_name: parking-app
     ports:
-      - "8080:8080"
+      - "7080:8080"
     depends_on:
       - postgres
+      - rabbitMQ
     restart: unless-stopped
     environment:
-      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/parquimetro_db"
-      SPRING_DATASOURCE_USERNAME: "postgres"
-      SPRING_DATASOURCE_PASSWORD: "root"
-      SPRING_MAIL_USERNAME: "parkingfiap860@gmail.com"
-      SPRING_MAIL_PASSWORD: "wxhn hnza adsb shqm"
+      DATABASE_HOST: postgres
+      DATASOURCE_USERNAME: ${DATASOURCE_USERNAME}
+      DATASOURCE_PASSWORD: ${DATASOURCE_PASSWORD}
+      SPRING_MAIL_USERNAME: ${PARKING_EMAIL}
+      SPRING_MAIL_PASSWORD: ${EMAIL_API_KEY}
+      RABBIT_HOST: rabbitmq
+      RABBIT_USER: ${RABBIT_USER}
+      RABBIT_PASSWORD: ${RABBIT_PASSWORD}
+    networks:
+      - parking-app-network
+
+  rabbitMQ:
+    image: rabbitmq:3.13-management
+    container_name: rabbitMQ
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBIT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBIT_PASSWORD}
+    ports:
+      - "5672:5672"
+      - "7071:15672"
     networks:
       - parking-app-network
 

@@ -32,7 +32,7 @@ public class InsertPaymentCommand {
 
     private void validatePaymentAndTypeCharge(TypeCharge typeCharge, TypePayment preferentialPayment) throws ValidationsException {
         if (TypePayment.PIX.equals(preferentialPayment) && !TypeCharge.FIXED.equals(typeCharge)) {
-            throw new ValidationsException("Op\u00E7\u00E3o de pagamento PIX est\u00E1 disponvel apenas para per\u00EDodos fixos!");
+            throw new ValidationsException("Op\u00E7\u00E3o de pagamento PIX est\u00E1 dispon\u00EDvel apenas para per\u00EDodos fixos!");
         }
     }
 }

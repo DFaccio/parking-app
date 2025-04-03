@@ -38,11 +38,7 @@ class VehicleService implements VehicleServiceInterface {
 
         Person person;
 
-        if (optional.isEmpty()) {
-            person = personService.insert(vehicle.getPerson());
-        } else {
-            person = optional.get();
-        }
+        person = optional.orElseGet(() -> personService.insert(vehicle.getPerson()));
 
         vehicle.setPerson(person);
 

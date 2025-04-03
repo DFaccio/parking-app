@@ -10,7 +10,9 @@ Uma aplicação desenvolvida para melhorar a experiência dos usuários em grama
 
 A documentação com os detalhes técnicos e requisitos podem ser acessados no [notion da equipe](https://topaz-havarti-e3c.notion.site/76d9f7f44c7e4cb0bc96a787fa0b73db?v=1a84151f993b4de69bbfcd5746c07567&pvs=4).
 
-Para uso do Swagger, basta executar a aplicação que a mesma estará disponível [neste link](http://localhost:8080/documentacao-parquimetro.html).
+Para uso do Swagger, basta executar a aplicação
+  * Container: [neste link](http://localhost:7080/documentacao-parquimetro.html).
+  * Local: [neste link](http://localhost:8080/documentacao-parquimetro.html).
 
 ---
 ### Membros do grupo de desenvolvimento:
@@ -23,48 +25,70 @@ Para uso do Swagger, basta executar a aplicação que a mesma estará disponíve
 ---
 ### Itens a instalar
 
-O projeto utiliza as tecnologias abaixo. Desta forma, será necessário instalações prévias.
-- [Java versão 17](https://www.oracle.com/br/java/technologies/downloads/#java17);
-- [Banco de dados PostgreSQL >= 14](https://www.postgresql.org/)
+O projeto utiliza as tecnologias abaixo.
+
+- [Java versão 17](https://www.oracle.com/br/java/technologies/downloads/#java17)
+- [PostgreSQL >= 14](https://www.postgresql.org/)
 - [Docker](https://www.docker.com/)
+- [RabbitMQ](https://www.rabbitmq.com/)
+
+Tanto PostgreSQL quanto RabbitMQ serão instalados via Docker, portanto, basta ter o Java e o Docker instalados.
 
 ---
 ### Configurações
 
+Para facilitar, optou-se pelo uso de docker. Desta forma, podemos ter formas diferentes de execução, mas em todos os casos precisamos informar as variáveis de ambiente.
+
+Desta forma, criei um arquivo .env no root do projeto. Adicione valores como deseja. 
+
+Para criação da chava de API para o e-mail, siga os passos informado na documentação do projeto.
+
+```
+DATABASE_HOST=localhost:7072
+DATASOURCE_USERNAME=postgres
+DATASOURCE_PASSWORD=root
+
+SPRING_MAIL_USERNAME=coloque_seu_email
+SPRING_MAIL_PASSWORD=coloque_a_chave_de_api
+
+PARKING_EMAIL=coloque_seu_email
+EMAIL_API_KEY=coloque_a_chave_de_api
+
+RABBIT_USER=guest
+RABBIT_PASSWORD=guest
+RABBIT_HOST=localhost
+RABBIT_PORT=5672
+```
+
+Note que algumas chaves que são necessárias no _application.properties_ para executar tudo via Docker, já foram setadas no compose.
+O arquivo acima, ilustra o uso da aplicação rodando local e o PostgreSQL e RabbitMQ executando via container.
+
+    Onde possui coloque_a_chave_de_api e coloque_seu_email é necessário atualizar para seu e-mail e sua chave de API criada.
+
 #### Executar localmente
 
-* spring.datasource.url:
+Execute o comando abaixo e pare o container de nome parking-app. Se nada foi alterado no compose, o arquivo .env já estaria configurado para tal.
 
-        jdbc:postgresql://localhost:{porta da instalação do PostgreSQL}/{banco criado para executar a aplicação}
-* spring.datasource.username: altere *admin* para o usuário que deseja utilizar
-* spring.datasource.password: altere *root* pela senha do usuário adicionada na propriedade anterior
-* spring.mail.username: adicione o e-mail
-* spring.mail.password: adicione a senha
+    docker compose up -d
 
 ### Executar através do Docker
-Neste têm-se duas opções. Executar apenas a aplicação através do Docker ou a aplicação e o banco, utilizando o arquivo compose.
 
-Caso deseja utilizar apenas a aplicação em docker, realize as mesmas configurações no application.properties como se fosse executar local. 
-Faça build do arquivo e por fim crie o container utilizando network igual a host.
+Neste, o que iria mudar seria o nome dos host, porém isso já foi configurado para está correto no arquivo compose, então basta executar o comando abaixo.
 
-    docker build -t nome_imagem . 
-    docker run --network="host" --name nome_imagem nome_container
-
-Caso irá executar tudo em container, basta executar o comando abaixo.
-    
-    docker compose up
+    docker compose up -d
 
 Lembrando que os comandos foram apresentados como se fossem executados a partir do root do diretório.
 
 ---
 ### Importante
-O sistema emitirá e-mails, após a finalização do uso do estacionamento. 
+O sistema emitirá e-mails, após a finalização do uso, próximo ao encerramento do período ou adição de período de estacionamento. 
 
 Nossos membros optaram por utilizar o gmail (e-mail do google) para o desenvolvimento. No notion existe o link com a documentação oficial do google de com gerar a senha do app para utilização.
 
-O processo de notificação dar-se a partir de uma schedule que verifica o tempo para adição de perído e fim de período.
-Para adição será verificado se dentro de 5 ou 10 minutos o período atual se encerra. Já para períodos fixos, é verificado apenas se é menor que 10 minutos.
+O processo de notificação dar-se a partir de uma fila. Quando próximo a finalização, seja por hora ou período fixo, será enviado um e-mail. 
+ * No caso de período por hora, ele não se encerra sozinho, então dez minutos antes de adicionar um novo período, é enviado um e-mail avisando e ao adicionar o perído também. 
+ * Já nos casos de período fixo, cinco minutos antes do encerramento é enviado um aviso e ao finalizar, é enviado o e-mail de encerramento.
 
-Períodos por hora não se encerram sozinhos (schedule). É necessário que seja desabilitado. Já perídos fixos se encerram com no mínimo 5 minutos de tolerância.
+É uma regra de negócio que período por hora se encerre por ação manual, ou seja, é necessário receber uma requisição para encerramento.
 
-Quando encerrado manual, independente do tipo de perído, será emitido um comprovante. Já para períodos fixos que são encerrados através da schedule, será enviado e-mail.
+Período fixo também podem ser encerrados manualmente, porém seu valor não será alterado. Em ambos os casos, será enviado um comprovante via e-mail.

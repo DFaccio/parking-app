@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class FindAllParkingCommand {
+
     @Resource
     private ParkingServiceInterface parkingService;
 
